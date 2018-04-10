@@ -74,42 +74,47 @@ def bacnet_read( args ):
         time.sleep( min_delay_sec * n_backlog )
         slept_1 = True
 
-    # Poll until previous request has completed (or timeout)
+    # Poll until previous request has completed (or until we reach timeout condition)
     abort_poll_time = time.time() + max_poll_sec
     prev_rq_id = this_rq_id - 1
-
+    do_poll = True
+    prev_completed = False
     timed_out = False
-    prev_completed = 0
-    do_poll = prev_completed == 0 and time.time() < abort_poll_time
+
     while do_poll:
+        # Determine whether predecessor has completed
         cur.execute( 'SELECT completed FROM Requests WHERE id=?', ( prev_rq_id, ) )
         prev_completed = cur.fetchone()[0]
+
+        # Determine whether to continue polling
         timed_out = time.time() >= abort_poll_time
-        do_poll = prev_completed == 0 and not timed_out
+        do_poll = ( not prev_completed ) and ( not timed_out )
+
+        # If continuing to poll, sleep a little first
         if do_poll:
             time.sleep( min_delay_sec )
             slept_2 = True
 
-    if prev_completed == 0:
-        # Previous request has not completed; artificially set the completed flag
-        cur.execute( 'UPDATE Requests SET completed=1 WHERE id=?', ( prev_rq_id, ) )
-        conn.commit()
-    else:
-        # Previous request has completed; enforce minimum delay
+    # If previous request has completed, enforce minimum delay
+    if prev_completed:
         cur.execute( 'SELECT completion_time FROM Requests WHERE id=?', ( prev_rq_id, ) )
         prev_completion_time = cur.fetchone()[0]
         sleep_sec = prev_completion_time + min_delay_sec - time.time()
         if sleep_sec > 0:
             time.sleep( sleep_sec )
             slept_3 = True
+    else:
+        # Previous request has not completed; artificially set the completed flag
+        cur.execute( 'UPDATE Requests SET completed=1 WHERE id=?', ( prev_rq_id, ) )
+        conn.commit()
 
-        # Remove previous request from table
-        cur.execute( 'DELETE FROM Requests WHERE id=?', ( prev_rq_id, ) )
+    # Remove predecessor entry from table
+    # cur.execute( 'DELETE FROM Requests WHERE id=?', ( prev_rq_id, ) )
 
     # Issue the BACnet request
     rsp = br.read( args )
 
-    # Update request entry in database
+    # Update request entry in database.  (It will no longer exist if successor has deleted it due to timeout.)
     completion_time = time.time()
     cur.execute( 'UPDATE Requests SET completed=?, completion_time=? WHERE id=?', ( 1, completion_time, this_rq_id, ) )
     conn.commit()
@@ -132,7 +137,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     open_db()
-    dict_bacnet_response = bacnet_read( args )
 
-    json_bacnet_response = json.dumps( dict_bacnet_response )
-    print( json_bacnet_response )
+    try:
+        dc_rsp = bacnet_read( args )
+    except:
+        dc_rsp = { 'error': 'bacnet_read() failed' }
+
+    s_rsp = json.dumps( dc_rsp )
+    print( s_rsp )
