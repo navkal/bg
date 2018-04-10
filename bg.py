@@ -6,6 +6,7 @@ import os
 import time
 import collections
 import json
+import bn
 
 
 db = 'bg.sqlite'
@@ -65,7 +66,7 @@ def bacnet_read( args ):
     row = rows[0]
     min_delay_sec = row[0]
     max_poll_sec = row[1]
-    
+
     slept_1 = slept_2 = slept_3 = False
 
     # If there is a backlog, take a nap before starting to poll
@@ -100,22 +101,24 @@ def bacnet_read( args ):
             time.sleep( sleep_sec )
             slept_3 = True
 
-    #########################
-    #########################
-    ### DO SOMETHING HERE ###
-    time.sleep( 0.1 )
-    #########################
-    #########################
+    # Issue the BACnet request
+    rsp = bn.read( args )
 
+    # Update request entry in database
     completion_time = time.time()
     cur.execute( 'UPDATE Requests SET completed=?, completion_time=? WHERE id=?', ( 1, completion_time, this_rq_id, ) )
     conn.commit()
 
-    d = { 'completion_time': completion_time, 'slept_1': slept_1, 'slept_2': slept_2, 'slept_3': slept_3 }
+    # Add debug info to response
+    rsp['AAA'] = 'AAA'
+    rsp['completion_time'] = completion_time
+    rsp['slept_1'] = slept_1
+    rsp['slept_2'] = slept_2
+    rsp['slept_3'] = slept_3
 
-    od = collections.OrderedDict( sorted( d.items() ) )
+    ordered = collections.OrderedDict( sorted( rsp.items() ) )
 
-    return od
+    return ordered
 
 
 if __name__ == '__main__':
