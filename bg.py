@@ -110,15 +110,14 @@ def bacnet_read( args ):
     conn.commit()
 
     # Add debug info to response
-    rsp['AAA'] = 'AAA'
     rsp['completion_time'] = completion_time
     rsp['slept_1'] = slept_1
     rsp['slept_2'] = slept_2
     rsp['slept_3'] = slept_3
 
-    ordered = collections.OrderedDict( sorted( rsp.items() ) )
+    rsp = collections.OrderedDict( sorted( rsp.items() ) )
 
-    return ordered
+    return rsp
 
 
 if __name__ == '__main__':

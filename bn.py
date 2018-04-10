@@ -8,7 +8,8 @@ def read( args ):
     import time
     time.sleep( 0.1 ) # fake fake fake fake fake fake
 
-    rsp = { 'read': 'bn.read' }
+
+    rsp = {}
 
     return rsp
 
