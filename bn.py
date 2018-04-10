@@ -5,8 +5,10 @@ import argparse
 
 def read( args ):
 
+    # --> fake --> fake --> fake --> fake -->
     import time
-    time.sleep( 0.1 ) # fake fake fake fake fake fake
+    time.sleep( 0.1 )
+    # <-- fake <-- fake <-- fake <-- fake <--
 
 
     rsp = {}
