@@ -6,7 +6,7 @@ import os
 import time
 import collections
 import json
-import bn
+import br
 
 
 db = 'bg.sqlite'
@@ -102,7 +102,7 @@ def bacnet_read( args ):
             slept_3 = True
 
     # Issue the BACnet request
-    rsp = bn.read( args )
+    rsp = br.read( args )
 
     # Update request entry in database
     completion_time = time.time()
