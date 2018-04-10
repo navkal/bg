@@ -56,7 +56,7 @@ def bacnet_read( args ):
     this_rq_id = cur.lastrowid
     conn.commit()
 
-    # Determine the backlog
+    # Count the backlog
     cur.execute( 'SELECT COUNT(*) FROM Requests WHERE id<? AND completed=0', ( this_rq_id, ) )
     n_backlog = cur.fetchone()[0] - 1
 
@@ -78,12 +78,14 @@ def bacnet_read( args ):
     abort_poll_time = time.time() + max_poll_sec
     prev_rq_id = this_rq_id - 1
 
+    timed_out = False
     prev_completed = 0
     do_poll = prev_completed == 0 and time.time() < abort_poll_time
     while do_poll:
         cur.execute( 'SELECT completed FROM Requests WHERE id=?', ( prev_rq_id, ) )
         prev_completed = cur.fetchone()[0]
-        do_poll = prev_completed == 0 and time.time() < abort_poll_time
+        timed_out = time.time() >= abort_poll_time
+        do_poll = prev_completed == 0 and not timed_out
         if do_poll:
             time.sleep( min_delay_sec )
             slept_2 = True
@@ -101,6 +103,9 @@ def bacnet_read( args ):
             time.sleep( sleep_sec )
             slept_3 = True
 
+        # Remove previous request from table
+        cur.execute( 'DELETE FROM Requests WHERE id=?', ( prev_rq_id, ) )
+
     # Issue the BACnet request
     rsp = br.read( args )
 
@@ -114,6 +119,7 @@ def bacnet_read( args ):
     rsp['slept_1'] = slept_1
     rsp['slept_2'] = slept_2
     rsp['slept_3'] = slept_3
+    rsp['timed_out'] = timed_out
 
     rsp = collections.OrderedDict( sorted( rsp.items() ) )
 
