@@ -138,12 +138,15 @@ if __name__ == '__main__':
     parser.add_argument('-t', dest='tbd',  help='tbd')
     args = parser.parse_args()
 
-    open_db()
-
     try:
-        dc_rsp = bacnet_read( args )
+        open_db()
     except:
-        dc_rsp = { 'error': 'bacnet_read() failed' }
+        dc_rsp = { 'error': 'open_db() failed' }
+    else:
+        try:
+            dc_rsp = bacnet_read( args )
+        except:
+            dc_rsp = { 'error': 'bacnet_read() failed' }
 
     s_rsp = json.dumps( dc_rsp )
     print( s_rsp )
