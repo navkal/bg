@@ -1,7 +1,7 @@
 # Copyright 2018 BACnet Gateway.  All rights reserved.
 
 import argparse
-############### import bacpypes
+import bacpypes
 
 def read( args ):
 
