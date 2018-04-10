@@ -109,7 +109,7 @@ def bacnet_read( args ):
         conn.commit()
 
     # Remove predecessor entry from table
-    cur.execute( 'DELETE FROM Requests WHERE id=?', ( prev_rq_id, ) )
+    # cur.execute( 'DELETE FROM Requests WHERE id=?', ( prev_rq_id, ) )
 
     # Issue the BACnet request
     rsp = br.read( args )
