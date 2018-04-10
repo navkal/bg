@@ -1,0 +1,7 @@
+AddType application/x-httpd-php .htm .html
+Options -Indexes
+
+RewriteEngine on
+
+# Deny access to specific file types
+RewriteRule "^(.+)\.(txt|csv|cdr|json|svg|py|sqlite)$" "-" [F]
