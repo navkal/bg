@@ -53,7 +53,8 @@ def open_db():
 def bacnet_read( args ):
 
     # Create entry representing current request
-    cur.execute( '''INSERT OR IGNORE INTO Requests ( start_time, completed, completion_time, request ) VALUES (?,?,?,?)''', ( time.time(), 0, 0, 'tbd' ) )
+    start_time = time.time()
+    cur.execute( '''INSERT OR IGNORE INTO Requests ( start_time, completed, completion_time, request ) VALUES (?,?,?,?)''', ( start_time, 0, 0, 'tbd' ) )
     this_rq_id = cur.lastrowid
     conn.commit()
 
@@ -123,7 +124,7 @@ def bacnet_read( args ):
     conn.commit()
 
     # Add debug info to response
-    rsp['completion_time'] = completion_time
+    rsp['elapsed_ms'] = round( ( completion_time - start_time ) * 1000 )
     rsp['slept_1'] = slept_1
     rsp['slept_2'] = slept_2
     rsp['slept_3'] = slept_3
