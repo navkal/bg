@@ -106,7 +106,7 @@ def bacnet_read( args ):
             time.sleep( sleep_sec )
             slept_3 = True
     else:
-        # Previous request has not completed; artificially set the completed flag
+        # Previous request has not completed; artificially set the completed flag so it is not counted against the backlog
         cur.execute( 'UPDATE Requests SET completed=1 WHERE id=?', ( prev_rq_id, ) )
         conn.commit()
 
