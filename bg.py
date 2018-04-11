@@ -125,9 +125,7 @@ def bacnet_read( args ):
 
     # Add debug info to response
     rsp['elapsed_ms'] = round( ( completion_time - start_time ) * 1000 )
-    rsp['slept_1'] = slept_1
-    rsp['slept_2'] = slept_2
-    rsp['slept_3'] = slept_3
+    rsp['slept'] = [slept_1, slept_2, slept_3]
     rsp['timed_out'] = timed_out
 
     rsp = collections.OrderedDict( sorted( rsp.items() ) )
