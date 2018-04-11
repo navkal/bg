@@ -37,6 +37,7 @@ def open_db():
 
             CREATE TABLE IF NOT EXISTS Requests (
                 id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                start_time FLOAT,
                 completed INTEGER,
                 completion_time FLOAT,
                 request TEXT
@@ -45,14 +46,14 @@ def open_db():
         ''');
 
         cur.execute( '''INSERT OR IGNORE INTO Constants ( min_delay_sec, max_poll_sec ) VALUES (?,?)''', ( 0.1, 3.0 ) )
-        cur.execute( '''INSERT OR IGNORE INTO Requests ( completed, completion_time, request ) VALUES (?,?,?)''', ( 1, 0, 'dummy' ) )
+        cur.execute( '''INSERT OR IGNORE INTO Requests ( start_time, completed, completion_time, request ) VALUES (?,?,?,?)''', ( 0, 1, 0, 'dummy' ) )
         conn.commit()
 
 
 def bacnet_read( args ):
 
     # Create entry representing current request
-    cur.execute( '''INSERT OR IGNORE INTO Requests ( completed, completion_time, request ) VALUES (?,?,?)''', ( 0, 0, 'request received at ' + str( time.time() ) ) )
+    cur.execute( '''INSERT OR IGNORE INTO Requests ( start_time, completed, completion_time, request ) VALUES (?,?,?,?)''', ( time.time(), 0, 0, 'tbd' ) )
     this_rq_id = cur.lastrowid
     conn.commit()
 
