@@ -28,7 +28,7 @@ def read( config_args, target_args ):
 
     # build a request
     request = ReadPropertyRequest(
-		objectIdentifier=( target_args['type'], target_args['property'] ),
+		objectIdentifier=( target_args['type'], target_args['instance'] ),
 		propertyIdentifier=target_args['property'],
 	)
     request.pduDestination = Address( target_args['address'] )
@@ -37,10 +37,10 @@ def read( config_args, target_args ):
     iocb = IOCB( request )
 
     # give it to the application
-    #### this_application.request_io( iocb )
+    this_application.request_io( iocb )
 
     # wait for it to complete
-    #### iocb.wait()
+    iocb.wait()
 
 
 
