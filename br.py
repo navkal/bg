@@ -20,6 +20,9 @@ def read( config_args, target_args ):
     # get the services supported
     services_supported = this_application.get_services_supported()
 
+    # let the device object know
+    this_device.protocolServicesSupported = services_supported.value
+
     rsp = { **config_args, **target_args }
     return rsp
 
