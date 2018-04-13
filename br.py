@@ -28,9 +28,9 @@ def read( config_args, target_args ):
 
     # build a request
     request = ReadPropertyRequest(
-		objectIdentifier=( target_args['type'], target_args['instance'] ),
-		propertyIdentifier=target_args['property'],
-	)
+        objectIdentifier=( target_args['type'], target_args['instance'] ),
+        propertyIdentifier=target_args['property'],
+    )
     request.pduDestination = Address( target_args['address'] )
 
     # make an IOCB
