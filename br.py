@@ -1,6 +1,7 @@
 # Copyright 2018 BACnet Gateway.  All rights reserved.
 
 from bacpypes.service.device import LocalDeviceObject
+from bacpypes.app import BIPSimpleApplication
 
 def read( config_args, target_args ):
 
@@ -10,8 +11,11 @@ def read( config_args, target_args ):
         objectIdentifier=config_args['objectIdentifier'],
         maxApduLengthAccepted=config_args['maxApduLengthAccepted'],
         segmentationSupported=config_args['segmentationSupported'],
-        vendorIdentifier=int(config_args['vendorIdentifier']),
+        vendorIdentifier=config_args['vendorIdentifier'],
         )
+
+    # make a simple application
+    this_application = BIPSimpleApplication( this_device, config_args['address'] )
 
     rsp = { **config_args, **target_args }
     return rsp
