@@ -15,7 +15,7 @@ def read( config_args, target_args ):
         maxApduLengthAccepted=config_args['maxApduLengthAccepted'],
         segmentationSupported=config_args['segmentationSupported'],
         vendorIdentifier=config_args['vendorIdentifier'],
-        )
+    )
 
     # make a simple application
     this_application = BIPSimpleApplication( this_device, config_args['address'] )
