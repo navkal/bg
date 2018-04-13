@@ -50,7 +50,7 @@ def open_db():
         conn.commit()
 
 
-def bacnet_read( args ):
+def bacnet_read( config_args, target_args ):
 
     # Create entry representing current request
     start_time = time.time()
@@ -116,7 +116,7 @@ def bacnet_read( args ):
     # <-- Commented out until further notice <--
 
     # Issue the BACnet request
-    rsp = br.read( args )
+    rsp = br.read( config_args, target_args )
 
     # Update request entry in database.  (It will no longer exist if successor has deleted it due to timeout.)
     completion_time = time.time()
@@ -144,7 +144,26 @@ if __name__ == '__main__':
         dc_rsp = { 'error': 'open_db() failed' }
     else:
         try:
-            dc_rsp = bacnet_read( args )
+
+            config_args = {
+                'objectName': 'Betelgeuse',
+                'address': '10.4.241.2',
+                'objectIdentifier': 599,
+                'maxApduLengthAccepted': 1024,
+                'segmentationSupported': 'segmentedBoth',
+                'vendorIdentifier': 15,
+                'foreignBBMD': '128.253.109.254',
+                'foreignTTL': 30,
+            }
+
+            target_args = {
+                'address': '10.12.0.250',
+                'type': 'analogInput',
+                'instance': '3006238',
+                'property': 'presentValue'
+            }
+
+            dc_rsp = bacnet_read( config_args, target_args )
         except:
             dc_rsp = { 'error': 'bacnet_read() failed' }
 
