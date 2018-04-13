@@ -2,7 +2,7 @@
 
 from bacpypes.service.device import LocalDeviceObject
 from bacpypes.app import BIPSimpleApplication
-from bacpypes.object import get_datatype
+from bacpypes.apdu import ReadPropertyRequest
 
 def read( config_args, target_args ):
 
@@ -24,7 +24,11 @@ def read( config_args, target_args ):
     # let the device object know
     this_device.protocolServicesSupported = services_supported.value
 
-    datatype = get_datatype( target_args['type'], target_args['property'] )
+    # build a request
+    request = ReadPropertyRequest(
+		objectIdentifier=( target_args['type'], target_args['property'] ),
+		propertyIdentifier=target_args['property'],
+	)
 
     rsp = { **config_args, **target_args }
     return rsp
