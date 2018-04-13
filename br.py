@@ -17,6 +17,9 @@ def read( config_args, target_args ):
     # make a simple application
     this_application = BIPSimpleApplication( this_device, config_args['address'] )
 
+    # get the services supported
+    services_supported = this_application.get_services_supported()
+
     rsp = { **config_args, **target_args }
     return rsp
 
