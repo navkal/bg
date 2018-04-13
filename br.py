@@ -14,7 +14,7 @@ def read( config_args, target_args ):
         objectIdentifier=config_args['objectIdentifier'],
         maxApduLengthAccepted=config_args['maxApduLengthAccepted'],
         segmentationSupported=config_args['segmentationSupported'],
-        vendorIdentifier=config_args['vendorIdentifier'],
+        vendorIdentifier=config_args['vendorIdentifier']
     )
 
     # make a simple application
@@ -29,7 +29,7 @@ def read( config_args, target_args ):
     # build a request
     request = ReadPropertyRequest(
         objectIdentifier=( target_args['type'], target_args['instance'] ),
-        propertyIdentifier=target_args['property'],
+        propertyIdentifier=target_args['property']
     )
     request.pduDestination = Address( target_args['address'] )
 
