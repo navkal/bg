@@ -34,7 +34,14 @@ def read( config_args, target_args ):
     request.pduDestination = Address( target_args['address'] )
 
     # make an IOCB
-    iocb = IOCB(request)
+    iocb = IOCB( request )
+
+    # give it to the application
+    #### this_application.request_io( iocb )
+
+    # wait for it to complete
+    #### iocb.wait()
+
 
 
     rsp = { **config_args, **target_args }
@@ -57,7 +64,7 @@ if __name__ == '__main__':
     target_args = {
         'address': '10.12.0.250',
         'type': 'analogInput',
-        'instance': '3006238',
+        'instance': 3006238,
         'property': 'presentValue'
     }
 
