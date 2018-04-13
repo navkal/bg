@@ -2,7 +2,7 @@
 
 from bacpypes.service.device import LocalDeviceObject
 from bacpypes.app import BIPSimpleApplication
-from bacpypes.object import get_object_class, get_datatype
+from bacpypes.object import get_datatype
 
 def read( config_args, target_args ):
 
