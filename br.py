@@ -3,6 +3,7 @@
 from bacpypes.service.device import LocalDeviceObject
 from bacpypes.app import BIPSimpleApplication
 from bacpypes.apdu import ReadPropertyRequest
+from bacpypes.pdu import Address
 
 def read( config_args, target_args ):
 
@@ -29,6 +30,8 @@ def read( config_args, target_args ):
 		objectIdentifier=( target_args['type'], target_args['property'] ),
 		propertyIdentifier=target_args['property'],
 	)
+    request.pduDestination = Address( target_args['address'] )
+
 
     rsp = { **config_args, **target_args }
     return rsp
