@@ -5,6 +5,8 @@ from bacpypes.app import BIPSimpleApplication
 from bacpypes.apdu import ReadPropertyRequest
 from bacpypes.pdu import Address
 from bacpypes.iocb import IOCB
+from bacpypes.task import TaskManager
+
 
 def read( config_args, target_args ):
 
@@ -37,14 +39,24 @@ def read( config_args, target_args ):
     iocb = IOCB( request )
 
     # give it to the application
+    TaskManager()
     this_application.request_io( iocb )
 
     # wait for it to complete
     iocb.wait()
 
 
+    # do something for error/reject/abort
+    if iocb.ioError:
+        rsp = { 'error': str( iocb.ioError ) }
 
-    rsp = { **config_args, **target_args }
+    # do something for success
+    elif iocb.ioResponse:
+        rsp = { **config_args, **target_args }
+
+    else:
+        rsp = { 'nothing': 'happened'}
+
     return rsp
 
 
