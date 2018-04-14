@@ -2,10 +2,10 @@
 
 from bacpypes.local.device import LocalDeviceObject
 from bacpypes.app import BIPSimpleApplication
+from bacpypes.core import run_once, enable_sleeping
 from bacpypes.apdu import ReadPropertyRequest
 from bacpypes.pdu import Address
 from bacpypes.iocb import IOCB
-from bacpypes.task import TaskManager
 
 
 def read( config_args, target_args ):
@@ -22,6 +22,12 @@ def read( config_args, target_args ):
     # make a simple application
     this_application = BIPSimpleApplication( this_device, config_args['address'] )
 
+    # ??? Do we need this???
+    enable_sleeping()
+
+    # Start the Task Manager
+    run_once()
+
     # build a request
     request = ReadPropertyRequest(
         objectIdentifier=( target_args['type'], target_args['instance'] ),
@@ -33,7 +39,6 @@ def read( config_args, target_args ):
     iocb = IOCB( request )
 
     # give it to the application
-    TaskManager()
     this_application.request_io( iocb )
 
     # wait for it to complete
