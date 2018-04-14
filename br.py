@@ -22,12 +22,6 @@ def read( config_args, target_args ):
     # make a simple application
     this_application = BIPSimpleApplication( this_device, config_args['address'] )
 
-    # get the services supported
-    services_supported = this_application.get_services_supported()
-
-    # let the device object know
-    this_device.protocolServicesSupported = services_supported.value
-
     # build a request
     request = ReadPropertyRequest(
         objectIdentifier=( target_args['type'], target_args['instance'] ),
@@ -43,7 +37,9 @@ def read( config_args, target_args ):
     this_application.request_io( iocb )
 
     # wait for it to complete
+    print( 'bf wait' )
     iocb.wait()
+    print( 'af wait' )
 
 
     # do something for error/reject/abort
