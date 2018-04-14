@@ -159,7 +159,7 @@ if __name__ == '__main__':
             target_args = {
                 'address': '10.12.0.250',
                 'type': 'analogInput',
-                'instance': '3006238',
+                'instance': 3006238,
                 'property': 'presentValue'
             }
 
