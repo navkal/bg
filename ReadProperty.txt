@@ -1,0 +1,1 @@
+read 10.12.0.250 analogInput 3006238 presentValue

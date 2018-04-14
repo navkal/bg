@@ -1,6 +1,6 @@
 # Copyright 2018 BACnet Gateway.  All rights reserved.
 
-from bacpypes.service.device import LocalDeviceObject
+from bacpypes.local.device import LocalDeviceObject
 from bacpypes.app import BIPSimpleApplication
 from bacpypes.apdu import ReadPropertyRequest
 from bacpypes.pdu import Address
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     config_args = {
         'objectName': 'Betelgeuse',
-        'address': '10.4.241.2',
+        'address': '10.4.241.1',
         'objectIdentifier': 599,
         'maxApduLengthAccepted': 1024,
         'segmentationSupported': 'segmentedBoth',
