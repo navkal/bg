@@ -147,7 +147,7 @@ if __name__ == '__main__':
 
             config_args = {
                 'objectName': 'Betelgeuse',
-                'address': '10.4.241.2',
+                'address': '10.4.241.1',
                 'objectIdentifier': 599,
                 'maxApduLengthAccepted': 1024,
                 'segmentationSupported': 'segmentedBoth',
