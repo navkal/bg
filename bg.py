@@ -45,7 +45,7 @@ def open_db():
 
         ''');
 
-        cur.execute( '''INSERT OR IGNORE INTO Constants ( min_delay_sec, max_poll_sec ) VALUES (?,?)''', ( 1.0, 5.0 ) )
+        cur.execute( '''INSERT OR IGNORE INTO Constants ( min_delay_sec, max_poll_sec ) VALUES (?,?)''', ( 0.1, 2.0 ) )
         cur.execute( '''INSERT OR IGNORE INTO Requests ( start_time, completed, completion_time, request ) VALUES (?,?,?,?)''', ( 0, 1, 0, 'dummy' ) )
         conn.commit()
 
@@ -116,7 +116,10 @@ def sync_request( config_args, target_args ):
     # <-- Commented out until further notice <--
 
     # Issue the BACnet request
-    rsp = br.read_property( config_args, target_args )
+    try:
+        rsp = br.read_property( config_args, target_args )
+    except:
+        rsp = { 'error': 'Exception in br.read_property()' }
 
     # Update request entry in database.  (It will no longer exist if successor has deleted it due to timeout.)
     completion_time = time.time()
