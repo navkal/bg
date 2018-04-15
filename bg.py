@@ -50,7 +50,7 @@ def open_db():
         conn.commit()
 
 
-def bacnet_read( config_args, target_args ):
+def sync_request( config_args, target_args ):
 
     # Create entry representing current request
     start_time = time.time()
@@ -116,7 +116,7 @@ def bacnet_read( config_args, target_args ):
     # <-- Commented out until further notice <--
 
     # Issue the BACnet request
-    rsp = br.read( config_args, target_args )
+    rsp = br.stub( config_args, target_args )
 
     # Update request entry in database.  (It will no longer exist if successor has deleted it due to timeout.)
     completion_time = time.time()
@@ -163,9 +163,9 @@ if __name__ == '__main__':
                 'property': 'presentValue'
             }
 
-            dc_rsp = bacnet_read( config_args, target_args )
+            dc_rsp = sync_request( config_args, target_args )
         except:
-            dc_rsp = { 'error': 'bacnet_read() failed' }
+            dc_rsp = { 'error': 'sync_request() failed' }
 
     s_rsp = json.dumps( dc_rsp )
     print( s_rsp )

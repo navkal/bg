@@ -1,12 +1,20 @@
 # Copyright 2018 BACnet Gateway.  All rights reserved.
 
+from threading import Thread
+
 from bacpypes.local.device import LocalDeviceObject
 from bacpypes.app import BIPSimpleApplication
-from bacpypes.core import run_once, enable_sleeping
+from bacpypes.core import run, enable_sleeping
 from bacpypes.apdu import ReadPropertyRequest
 from bacpypes.pdu import Address
 from bacpypes.iocb import IOCB
+from bacpypes.object import get_datatype
+from bacpypes.constructeddata import Array
 
+this_application = None
+
+def stub( config_args, target_args ):
+    return { **config_args, **target_args }
 
 def read( config_args, target_args ):
 
@@ -20,13 +28,20 @@ def read( config_args, target_args ):
     )
 
     # make a simple application
+    global this_application
     this_application = BIPSimpleApplication( this_device, config_args['address'] )
 
-    # ??? Do we need this???
-    enable_sleeping()
+    # Start the console
+    t = Thread( target=console )
+    t.start()
 
     # Start the Task Manager
-    run_once()
+    enable_sleeping()
+    run()
+
+
+
+def console():
 
     # build a request
     request = ReadPropertyRequest(
@@ -53,11 +68,27 @@ def read( config_args, target_args ):
 
     # do something for success
     elif iocb.ioResponse:
-        rsp = { **config_args, **target_args }
+
+        apdu = iocb.ioResponse
+        datatype = get_datatype( apdu.objectIdentifier[0], apdu.propertyIdentifier )
+        if issubclass( datatype, Array ) and (apdu.propertyArrayIndex is not None):
+            if apdu.propertyArrayIndex == 0:
+                value = apdu.propertyValue.cast_out( Unsigned )
+            else:
+                value = apdu.propertyValue.cast_out( datatype.subtype )
+        else:
+            value = apdu.propertyValue.cast_out( datatype )
+
+        apdu = iocb.ioResponse
+        datatype = get_datatype( apdu.objectIdentifier[0], apdu.propertyIdentifier )
+
+        print( '====================> ', value )
+        rsp = { 'value': value }
 
     else:
-        rsp = { 'nothing': 'happened'}
+        rsp = { 'nothing': 'happened' }
 
+    print( 'RETURNING', rsp )
     return rsp
 
 
