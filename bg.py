@@ -141,7 +141,7 @@ if __name__ == '__main__':
     try:
         open_db()
     except:
-        dc_rsp = { 'error': 'open_db() failed' }
+        dc_rsp = { 'error': 'bg.open_db() failed' }
     else:
         try:
 
@@ -164,8 +164,9 @@ if __name__ == '__main__':
             }
 
             dc_rsp = sync_request( config_args, target_args )
+
         except:
-            dc_rsp = { 'error': 'sync_request() failed' }
+            dc_rsp = { 'error': 'bg.sync_request() failed' }
 
     s_rsp = json.dumps( dc_rsp )
     print( s_rsp )
