@@ -116,7 +116,7 @@ def sync_request( config_args, target_args ):
     # <-- Commented out until further notice <--
 
     # Issue the BACnet request
-    rsp = br.stub( config_args, target_args )
+    rsp = br.read_property( config_args, target_args )
 
     # Update request entry in database.  (It will no longer exist if successor has deleted it due to timeout.)
     completion_time = time.time()
