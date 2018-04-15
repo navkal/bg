@@ -30,17 +30,17 @@ def read_property( config_args, target_args ):
 
 
 def start_task_manager():
+    enable_sleeping()
     t = Thread( target=task_manager )
     t.setDaemon( True )
     t.start()
 
     # Prevent 'no task manager' error? (almost never happens; not sure whether this would help)
-    while not t.is_alive():
-        sleep( 0.01 )
+    # while not t.is_alive():
+        # sleep( 0.01 )
 
 
 def task_manager():
-    enable_sleeping()
     run()
 
 
