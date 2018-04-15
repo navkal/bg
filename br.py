@@ -35,10 +35,6 @@ def start_task_manager():
     t.setDaemon( True )
     t.start()
 
-    # Prevent 'no task manager' error? (almost never happens; not sure whether this would help)
-    # while not t.is_alive():
-        # sleep( 0.01 )
-
 
 def task_manager():
     run()
