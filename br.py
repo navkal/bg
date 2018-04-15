@@ -97,7 +97,7 @@ def send_request( target_args, app ):
 
     else:
         # Neither
-        rsp = { 'error': 'unexpected termination of IOCB wait without ioError or ioResponse' }
+        rsp = { 'error': 'Request terminated unexpectedly' }
 
     return rsp
 
