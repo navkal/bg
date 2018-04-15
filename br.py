@@ -73,11 +73,11 @@ def send_request( target_args, app ):
 
     # Handle completion: error, success, neither
     if iocb.ioError:
-        # error
+        # Error
         rsp = { 'error': str( iocb.ioError ) }
 
     elif iocb.ioResponse:
-        # success
+        # Success
 
         # Get the response PDU
         apdu = iocb.ioResponse
@@ -92,13 +92,13 @@ def send_request( target_args, app ):
         else:
             value = apdu.propertyValue.cast_out( datatype )
 
+        # Load returned value into response
         rsp = { 'value': value }
 
     else:
-        # neither
+        # Neither
         rsp = { 'error': 'unexpected termination of IOCB wait without ioError or ioResponse' }
 
-    print( 'RETURNING', rsp )
     return rsp
 
 
