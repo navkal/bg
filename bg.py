@@ -118,8 +118,8 @@ def sync_request( config_args, target_args ):
     # Issue the BACnet request
     try:
         rsp = br.read_property( config_args, target_args )
-    except:
-        rsp = { 'error': 'Exception in br.read_property()' }
+    except Exception as e:
+        rsp = { 'error': 'br.read_property() encountered exception: ' + str(e) }
 
     # Update request entry in database.  (It will no longer exist if successor has deleted it due to timeout.)
     completion_time = time.time()
