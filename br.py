@@ -63,6 +63,10 @@ def read( config_args, target_args ):
 
 if __name__ == '__main__':
 
+    # Pick up debug parameters
+    from bacpypes.consolelogging import ConfigArgumentParser
+    args = ConfigArgumentParser(description=__doc__).parse_args()
+
     config_args = {
         'objectName': 'Betelgeuse',
         'address': '10.4.241.1',
