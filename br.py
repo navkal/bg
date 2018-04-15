@@ -71,14 +71,18 @@ def send_request( target_args, app ):
     # wait for it to complete
     iocb.wait()
 
-    # do something for error/reject/abort
+    # Handle completion: error, success, neither
     if iocb.ioError:
+        # error
         rsp = { 'error': str( iocb.ioError ) }
 
-    # do something for success
     elif iocb.ioResponse:
+        # success
 
+        # Get the response PDU
         apdu = iocb.ioResponse
+
+        # Extract the returned value
         datatype = get_datatype( apdu.objectIdentifier[0], apdu.propertyIdentifier )
         if issubclass( datatype, Array ) and (apdu.propertyArrayIndex is not None):
             if apdu.propertyArrayIndex == 0:
@@ -88,13 +92,10 @@ def send_request( target_args, app ):
         else:
             value = apdu.propertyValue.cast_out( datatype )
 
-        apdu = iocb.ioResponse
-        datatype = get_datatype( apdu.objectIdentifier[0], apdu.propertyIdentifier )
-
-        print( '====================> ', value )
         rsp = { 'value': value }
 
     else:
+        # neither
         rsp = { 'error': 'unexpected termination of IOCB wait without ioError or ioResponse' }
 
     print( 'RETURNING', rsp )
