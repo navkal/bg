@@ -40,7 +40,7 @@ def task_manager():
 
 def make_application( config_args ):
 
-    this_device = LocalDeviceObject(
+    dev = LocalDeviceObject(
         objectName=config_args['objectName'],
         objectIdentifier=config_args['objectIdentifier'],
         maxApduLengthAccepted=config_args['maxApduLengthAccepted'],
@@ -48,7 +48,7 @@ def make_application( config_args ):
         vendorIdentifier=config_args['vendorIdentifier']
     )
 
-    app = BIPSimpleApplication( this_device, config_args['address'] )
+    app = BIPSimpleApplication( dev, config_args['address'] )
 
     return app
 
@@ -95,7 +95,7 @@ def send_request( target_args, app ):
         rsp = { 'value': value }
 
     else:
-        rsp = { 'nothing': 'happened' }
+        rsp = { 'error': 'unexpected termination of IOCB wait without ioError or ioResponse' }
 
     print( 'RETURNING', rsp )
     return rsp
@@ -105,7 +105,7 @@ if __name__ == '__main__':
 
     ca = {
         'objectName': 'Betelgeuse',
-        'address': '10.4.241.1',
+        'address': '10.4.241.2',
         'objectIdentifier': 599,
         'maxApduLengthAccepted': 1024,
         'segmentationSupported': 'segmentedBoth',
