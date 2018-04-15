@@ -1,5 +1,6 @@
 # Copyright 2018 BACnet Gateway.  All rights reserved.
 
+from time import sleep
 from warnings import catch_warnings, simplefilter
 from threading import Thread
 
@@ -11,6 +12,7 @@ from bacpypes.pdu import Address
 from bacpypes.iocb import IOCB
 from bacpypes.object import get_datatype
 from bacpypes.constructeddata import Array
+from bacpypes.primitivedata import Unsigned
 
 
 
@@ -31,6 +33,10 @@ def start_task_manager():
     t = Thread( target=task_manager )
     t.setDaemon( True )
     t.start()
+
+    # Prevent 'no task manager' error? (almost never happens; not sure whether this would help)
+    while not t.is_alive():
+        sleep( 0.01 )
 
 
 def task_manager():
