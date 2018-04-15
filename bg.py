@@ -45,7 +45,7 @@ def open_db():
 
         ''');
 
-        cur.execute( '''INSERT OR IGNORE INTO Constants ( min_delay_sec, max_poll_sec ) VALUES (?,?)''', ( 0.1, 2.0 ) )
+        cur.execute( '''INSERT OR IGNORE INTO Constants ( min_delay_sec, max_poll_sec ) VALUES (?,?)''', ( 1.0, 5.0 ) )
         cur.execute( '''INSERT OR IGNORE INTO Requests ( start_time, completed, completion_time, request ) VALUES (?,?,?,?)''', ( 0, 1, 0, 'dummy' ) )
         conn.commit()
 
