@@ -14,7 +14,7 @@ from bacpypes.object import get_datatype
 from bacpypes.constructeddata import Array
 from bacpypes.primitivedata import Unsigned
 
-
+_standalone = 1
 
 def read_property( target_args ):
 
@@ -57,49 +57,56 @@ def make_application():
 
 def send_request( target_args, app ):
 
-    # build a request
-    request = ReadPropertyRequest(
-        objectIdentifier=( target_args['type'], target_args['instance'] ),
-        propertyIdentifier=target_args['property']
-    )
-    request.pduDestination = Address( target_args['address'] )
+    if _standalone:
 
-    # make an IOCB
-    iocb = IOCB( request )
-
-    # give it to the application
-    app.request_io( iocb )
-
-    # wait for it to complete
-    iocb.wait()
-
-    # Handle completion: error, success, neither
-    if iocb.ioError:
-        # Error
-        rsp = { 'error': str( iocb.ioError ) }
-
-    elif iocb.ioResponse:
-        # Success
-
-        # Get the response PDU
-        apdu = iocb.ioResponse
-
-        # Extract the returned value
-        datatype = get_datatype( apdu.objectIdentifier[0], apdu.propertyIdentifier )
-        if issubclass( datatype, Array ) and (apdu.propertyArrayIndex is not None):
-            if apdu.propertyArrayIndex == 0:
-                value = apdu.propertyValue.cast_out( Unsigned )
-            else:
-                value = apdu.propertyValue.cast_out( datatype.subtype )
-        else:
-            value = apdu.propertyValue.cast_out( datatype )
-
-        # Load returned value into response
-        rsp = { 'value': value }
+        import random
+        rsp = { 'value': str( random.randrange( 650000000, 720000000 ) / 10000000 ) + ' (standalone test value)' }
 
     else:
-        # Neither
-        rsp = { 'error': 'Request terminated unexpectedly' }
+
+        # build a request
+        request = ReadPropertyRequest(
+            objectIdentifier=( target_args['type'], target_args['instance'] ),
+            propertyIdentifier=target_args['property']
+        )
+        request.pduDestination = Address( target_args['address'] )
+
+        # make an IOCB
+        iocb = IOCB( request )
+
+        # give it to the application
+        app.request_io( iocb )
+
+        # wait for it to complete
+        iocb.wait()
+
+        # Handle completion: error, success, neither
+        if iocb.ioError:
+            # Error
+            rsp = { 'error': str( iocb.ioError ) }
+
+        elif iocb.ioResponse:
+            # Success
+
+            # Get the response PDU
+            apdu = iocb.ioResponse
+
+            # Extract the returned value
+            datatype = get_datatype( apdu.objectIdentifier[0], apdu.propertyIdentifier )
+            if issubclass( datatype, Array ) and (apdu.propertyArrayIndex is not None):
+                if apdu.propertyArrayIndex == 0:
+                    value = apdu.propertyValue.cast_out( Unsigned )
+                else:
+                    value = apdu.propertyValue.cast_out( datatype.subtype )
+            else:
+                value = apdu.propertyValue.cast_out( datatype )
+
+            # Load returned value into response
+            rsp = { 'value': value }
+
+        else:
+            # Neither
+            rsp = { 'error': 'Request terminated unexpectedly' }
 
     return rsp
 
