@@ -50,7 +50,7 @@ def open_db():
         conn.commit()
 
 
-def sync_request( config_args, target_args ):
+def sync_request( target_args ):
 
     # Create entry representing current request
     start_time = time.time()
@@ -117,7 +117,7 @@ def sync_request( config_args, target_args ):
 
     # Issue the BACnet request
     try:
-        rsp = br.read_property( config_args, target_args )
+        rsp = br.read_property( target_args )
     except Exception as e:
         rsp = { 'error': 'br.read_property() encountered exception: ' + str(e) }
 
@@ -148,16 +148,6 @@ if __name__ == '__main__':
     else:
         try:
 
-            config_args = {
-                'objectName': 'Betelgeuse',
-                'objectIdentifier': 599,
-                'maxApduLengthAccepted': 1024,
-                'segmentationSupported': 'segmentedBoth',
-                'vendorIdentifier': 15,
-                'foreignBBMD': '128.253.109.254',
-                'foreignTTL': 30,
-            }
-
             target_args = {
                 'address': '10.12.0.250',
                 'type': 'analogInput',
@@ -165,7 +155,7 @@ if __name__ == '__main__':
                 'property': 'presentValue'
             }
 
-            dc_rsp = sync_request( config_args, target_args )
+            dc_rsp = sync_request( target_args )
 
         except:
             dc_rsp = { 'error': 'bg.sync_request() failed' }

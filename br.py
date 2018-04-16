@@ -16,15 +16,13 @@ from bacpypes.primitivedata import Unsigned
 
 
 
-def read_property( config_args, target_args ):
-
-    config_args['address'] = gethostbyname( gethostname() )
+def read_property( target_args ):
 
     with catch_warnings():
         simplefilter("ignore")
         start_task_manager()
 
-    app = make_application( config_args )
+    app = make_application()
 
     rsp = send_request( target_args, app )
 
@@ -42,7 +40,19 @@ def task_manager():
     run()
 
 
-def make_application( config_args ):
+def make_application():
+
+    config_args = {
+        'objectName': 'Betelgeuse',
+        'objectIdentifier': 599,
+        'maxApduLengthAccepted': 1024,
+        'segmentationSupported': 'segmentedBoth',
+        'vendorIdentifier': 15,
+        'foreignBBMD': '128.253.109.254',
+        'foreignTTL': 30,
+    }
+
+    config_args['address'] = gethostbyname( gethostname() )
 
     dev = LocalDeviceObject(
         objectName=config_args['objectName'],
@@ -108,16 +118,6 @@ def send_request( target_args, app ):
 
 if __name__ == '__main__':
 
-    ca = {
-        'objectName': 'Betelgeuse',
-        'objectIdentifier': 599,
-        'maxApduLengthAccepted': 1024,
-        'segmentationSupported': 'segmentedBoth',
-        'vendorIdentifier': 15,
-        'foreignBBMD': '128.253.109.254',
-        'foreignTTL': 30,
-    }
-
     ta = {
         'address': '10.12.0.250',
         'type': 'analogInput',
@@ -125,6 +125,6 @@ if __name__ == '__main__':
         'property': 'presentValue'
     }
 
-    rsp = read_property( ca, ta )
+    rsp = read_property( ta )
 
     print( rsp )
