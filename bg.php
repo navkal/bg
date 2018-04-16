@@ -3,34 +3,42 @@
 
   error_log( '==> request=' . print_r( $_REQUEST, true ) );
 
-  if ( count( $_REQUEST ) )
+  $bGotAllArgs = isset(
+    $_REQUEST['address'],
+    $_REQUEST['type'],
+    $_REQUEST['instance'],
+    $_REQUEST['property']
+  );
+
+  if ( $bGotAllArgs )
   {
-    // Get attributes
-    // $sLocation = quote( $_POST['loc_new'] );
-    // $sOldLocation = quote( $_POST['loc_old'] );
-    // $sDescription = quote( $_POST['loc_descr'] );
-
-    // Format command
-    // $command = quote( getenv( 'PYTHON' ) ) . ' ../database/addLocation.py 2>&1 -b ' . $_SESSION['panelSpy']['user']['username']
-      // . ' -l ' . $sLocation
-      // . ' -o ' . $sOldLocation
-      // . ' -d ' . $sDescription
-      // . $g_sContext;
-
-
-
     $t0 = microtime( true );
 
-    $command = quote( getenv( "PYTHON" ) ) . " bg.py -t TBD";
+    // Format command
+    $command = quote( getenv( "PYTHON" ) ) . ' bg.py'
+      . ' -a ' . $_REQUEST['address']
+      . ' -t ' . $_REQUEST['type']
+      . ' -i ' . $_REQUEST['instance']
+      . ' -p ' . $_REQUEST['property'];
+
     error_log( "===> command=" . $command );
     exec( $command, $output, $status );
     error_log( "===> output=" . print_r( $output, true ) );
 
-    $tBacnetRsp = json_decode( $output[ count( $output ) - 1 ] );
+    $iRspOffset = count( $output ) - 1;
+    if ( $iRspOffset >= 0 )
+    {
+      $tBacnetRsp = json_decode( $output[ $iRspOffset ] );
+    }
+    else
+    {
+      $tBacnetRsp = [ 'status' => $status ];
+    }
+
 
     $tGatewayRsp =
       [
-        'elapsed_time' => round( 1000 * ( microtime( true ) - $t0 ) ) . ' ms',
+        'service_time' => round( 1000 * ( microtime( true ) - $t0 ) ) . ' ms',
         'bacnet_response' => $tBacnetRsp
       ];
 
@@ -40,7 +48,7 @@
   }
   else
   {
-    $sEcho = json_encode( 'BACnet Gateway request error' );
+    $sEcho = json_encode( 'BACnet Gateway request arguments missing' );
   }
 
   echo $sEcho;

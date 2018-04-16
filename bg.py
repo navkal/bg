@@ -138,8 +138,13 @@ def sync_request( target_args ):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser( description='Propagate a BACnet read request from the BACnet Gateway to a BACnet agent' )
-    parser.add_argument('-t', dest='tbd',  help='tbd')
+    parser.add_argument( '-a', dest='address',  help='Target IP address' )
+    parser.add_argument( '-t', dest='type',  help='Target type' )
+    parser.add_argument( '-i', dest='instance',  help='Target instance' )
+    parser.add_argument( '-p', dest='property',  help='Target property' )
+
     args = parser.parse_args()
+
 
     try:
         open_db()
@@ -149,10 +154,10 @@ if __name__ == '__main__':
         try:
 
             target_args = {
-                'address': '10.12.0.250',
-                'type': 'analogInput',
-                'instance': 3006238,
-                'property': 'presentValue'
+                'address': args.address,
+                'type': args.type,
+                'instance': int( args.instance ),
+                'property': args.property
             }
 
             dc_rsp = sync_request( target_args )
