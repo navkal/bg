@@ -105,12 +105,21 @@ def send_request( target_args, app ):
 
 
 if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser( description='Issue BACnet read request' )
+    parser.add_argument( '-a', dest='address',  help='Target IP address' )
+    parser.add_argument( '-t', dest='type',  help='Target type' )
+    parser.add_argument( '-i', dest='instance',  help='Target instance' )
+    parser.add_argument( '-p', dest='property',  help='Target property' )
+
+    args = parser.parse_args()
 
     target_args = {
-        'address': '10.12.0.250',
-        'type': 'analogInput',
-        'instance': 3006238,
-        'property': 'presentValue'
+        'address': args.address,
+        'type': args.type,
+        'instance': int( args.instance ),
+        'property': args.property
     }
 
     rsp = read_property( target_args )
