@@ -127,7 +127,7 @@ def sync_request( target_args ):
     conn.commit()
 
     # Add debug info to response
-    rsp['elapsed_ms'] = round( ( completion_time - start_time ) * 1000 )
+    rsp['reponse_time'] = str( round( ( completion_time - start_time ) * 1000 ) ) + ' ms'
     rsp['slept'] = [slept_1, slept_2, slept_3]
     rsp['timed_out'] = timed_out
 
