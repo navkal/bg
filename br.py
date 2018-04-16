@@ -118,13 +118,13 @@ def send_request( target_args, app ):
 
 if __name__ == '__main__':
 
-    ta = {
+    target_args = {
         'address': '10.12.0.250',
         'type': 'analogInput',
         'instance': 3006238,
         'property': 'presentValue'
     }
 
-    rsp = read_property( ta )
+    rsp = read_property( target_args )
 
     print( rsp )
