@@ -54,7 +54,8 @@ def sync_request( target_args ):
 
     # Create entry representing current request
     start_time = time.time()
-    cur.execute( '''INSERT OR IGNORE INTO Requests ( start_time, completed, completion_time, request ) VALUES (?,?,?,?)''', ( start_time, 0, 0, 'tbd' ) )
+    cmd = 'read ' + target_args['address'] + ' ' + target_args['type'] + ' ' + str( target_args['instance'] ) + ' ' + target_args['property']
+    cur.execute( '''INSERT OR IGNORE INTO Requests ( start_time, completed, completion_time, request ) VALUES (?,?,?,?)''', ( start_time, 0, 0, cmd ) )
     this_rq_id = cur.lastrowid
     conn.commit()
 
