@@ -42,27 +42,15 @@ def task_manager():
 
 def make_application():
 
-    config_args = {
-        'objectName': 'Betelgeuse',
-        'objectIdentifier': 599,
-        'maxApduLengthAccepted': 1024,
-        'segmentationSupported': 'segmentedBoth',
-        'vendorIdentifier': 15,
-        'foreignBBMD': '128.253.109.254',
-        'foreignTTL': 30,
-    }
-
-    config_args['address'] = gethostbyname( gethostname() )
-
     dev = LocalDeviceObject(
-        objectName=config_args['objectName'],
-        objectIdentifier=config_args['objectIdentifier'],
-        maxApduLengthAccepted=config_args['maxApduLengthAccepted'],
-        segmentationSupported=config_args['segmentationSupported'],
-        vendorIdentifier=config_args['vendorIdentifier']
+        objectName='Betelgeuse',
+        objectIdentifier=599,
+        maxApduLengthAccepted=1024,
+        segmentationSupported='segmentedBoth',
+        vendorIdentifier=15
     )
 
-    app = BIPSimpleApplication( dev, config_args['address'] )
+    app = BIPSimpleApplication( dev, gethostbyname( gethostname() ) )
 
     return app
 
