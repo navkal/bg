@@ -1,6 +1,6 @@
 # Copyright 2018 BACnet Gateway.  All rights reserved.
 
-from time import sleep
+from socket import gethostbyname, gethostname
 from warnings import catch_warnings, simplefilter
 from threading import Thread
 
@@ -17,6 +17,8 @@ from bacpypes.primitivedata import Unsigned
 
 
 def read_property( config_args, target_args ):
+
+    config_args['address'] = gethostbyname( gethostname() )
 
     with catch_warnings():
         simplefilter("ignore")
@@ -108,7 +110,6 @@ if __name__ == '__main__':
 
     ca = {
         'objectName': 'Betelgeuse',
-        'address': '10.4.241.2',
         'objectIdentifier': 599,
         'maxApduLengthAccepted': 1024,
         'segmentationSupported': 'segmentedBoth',
