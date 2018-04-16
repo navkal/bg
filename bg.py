@@ -40,13 +40,14 @@ def open_db():
                 start_time FLOAT,
                 completed INTEGER,
                 completion_time FLOAT,
-                request TEXT
+                request TEXT,
+                response TEXT
             );
 
         ''');
 
         cur.execute( '''INSERT OR IGNORE INTO Constants ( min_delay_sec, max_poll_sec ) VALUES (?,?)''', ( 1.0, 5.0 ) )
-        cur.execute( '''INSERT OR IGNORE INTO Requests ( start_time, completed, completion_time, request ) VALUES (?,?,?,?)''', ( 0, 1, 0, 'dummy' ) )
+        cur.execute( '''INSERT OR IGNORE INTO Requests ( start_time, completed, completion_time, request, response ) VALUES (?,?,?,?,?)''', ( 0, 1, 0, 'dummy', '' ) )
         conn.commit()
 
 
@@ -55,7 +56,7 @@ def sync_request( target_args ):
     # Create entry representing current request
     start_time = time.time()
     cmd = 'read ' + target_args['address'] + ' ' + target_args['type'] + ' ' + str( target_args['instance'] ) + ' ' + target_args['property']
-    cur.execute( '''INSERT OR IGNORE INTO Requests ( start_time, completed, completion_time, request ) VALUES (?,?,?,?)''', ( start_time, 0, 0, cmd ) )
+    cur.execute( '''INSERT OR IGNORE INTO Requests ( start_time, completed, completion_time, request, response ) VALUES (?,?,?,?,?)''', ( start_time, 0, 0, cmd, '' ) )
     this_rq_id = cur.lastrowid
     conn.commit()
 
@@ -120,11 +121,11 @@ def sync_request( target_args ):
     try:
         rsp = br.read_property( target_args )
     except Exception as e:
-        rsp = { 'error': 'br.read_property() encountered exception: ' + str(e) }
+        rsp = { 'error': 'br.read_property() encountered exception: ' + str(e), 'value': '' }
 
     # Update request entry in database.  (It will no longer exist if successor has deleted it due to timeout.)
     completion_time = time.time()
-    cur.execute( 'UPDATE Requests SET completed=?, completion_time=? WHERE id=?', ( 1, completion_time, this_rq_id, ) )
+    cur.execute( 'UPDATE Requests SET completed=?, completion_time=?, response=? WHERE id=?', ( 1, completion_time, rsp['value'], this_rq_id, ) )
     conn.commit()
 
     # Add debug info to response
