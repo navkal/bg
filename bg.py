@@ -131,7 +131,7 @@ def sync_request( target_args ):
 
     # Collect debug info
     rsp_debug = {}
-    rsp_debug['reponse_time'] = str( round( ( completion_time - start_time ) * 1000 ) ) + ' ms'
+    rsp_debug['response_time'] = str( round( ( completion_time - start_time ) * 1000 ) ) + ' ms'
     rsp_debug['slept'] = [slept_1, slept_2, slept_3]
     rsp_debug['timed_out'] = timed_out
 

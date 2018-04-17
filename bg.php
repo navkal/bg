@@ -38,8 +38,8 @@
 
     $tGatewayRsp =
       [
-        'service_time' => round( 1000 * ( microtime( true ) - $t0 ) ) . ' ms',
-        'bacnet_response' => $tBacnetRsp
+        'bacnet_response' => $tBacnetRsp,
+        'service_time' => round( 1000 * ( microtime( true ) - $t0 ) ) . ' ms'
       ];
 
     $sJson = json_encode( $tGatewayRsp );
