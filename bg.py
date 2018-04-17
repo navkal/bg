@@ -55,7 +55,8 @@ def sync_request( target_args ):
 
     # Create entry representing current request
     start_time = time.time()
-    cmd = 'read ' + target_args['address'] + ' ' + target_args['type'] + ' ' + str( target_args['instance'] ) + ' ' + target_args['property']
+    property = target_args['property']
+    cmd = 'read ' + target_args['address'] + ' ' + target_args['type'] + ' ' + str( target_args['instance'] ) + ' ' + property
     cur.execute( '''INSERT OR IGNORE INTO Requests ( start_time, completed, completion_time, request, response ) VALUES (?,?,?,?,?)''', ( start_time, 0, 0, cmd, '' ) )
     this_rq_id = cur.lastrowid
     conn.commit()
@@ -121,12 +122,12 @@ def sync_request( target_args ):
     try:
         rsp_data = br.read_property( target_args )
     except Exception as e:
-        rsp_data = { 'error': 'br.read_property() encountered exception: ' + str(e), target_args['property']: '', 'units': '' }
+        rsp_data = { 'error': 'br.read_property() encountered exception: ' + str(e), property: '', 'units': '' }
 
 
     # Update request entry in database.  (It will no longer exist if successor has deleted it due to timeout.)
     completion_time = time.time()
-    cur.execute( 'UPDATE Requests SET completed=?, completion_time=?, response=? WHERE id=?', ( 1, completion_time, str( rsp_data[target_args['property']] ) + ' ' + rsp_data['units'], this_rq_id, ) )
+    cur.execute( 'UPDATE Requests SET completed=?, completion_time=?, response=? WHERE id=?', ( 1, completion_time, str( rsp_data[property] ) + ' ' + rsp_data['units'], this_rq_id, ) )
     conn.commit()
 
     # Collect debug info
