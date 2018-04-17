@@ -24,7 +24,7 @@ def read_property( target_args ):
 
     app = make_application()
 
-    rsp = send_request( target_args, app )
+    rsp = get_value_and_units( target_args, app )
 
     return rsp
 
@@ -55,58 +55,69 @@ def make_application():
     return app
 
 
-def send_request( target_args, app ):
+def get_value_and_units( target_args, app ):
 
     if _standalone:
 
         import random
-        rsp = { 'value': str( random.randrange( 650000000, 720000000 ) / 10000000 ) + ' (standalone test value)' }
+        rsp = { target_args['property']: random.randrange( 650000000, 720000000 ) / 10000000, 'units': 'foonits' }
 
     else:
 
-        # build a request
-        request = ReadPropertyRequest(
-            objectIdentifier=( target_args['type'], target_args['instance'] ),
-            propertyIdentifier=target_args['property']
-        )
-        request.pduDestination = Address( target_args['address'] )
+        rsp_value = send_request( target_args, app )
 
-        # make an IOCB
-        iocb = IOCB( request )
+        target_args['property'] = 'units'
+        rsp_units = send_request( target_args, app )
 
-        # give it to the application
-        app.request_io( iocb )
+        rsp = { **rsp_value, **rsp_units }
 
-        # wait for it to complete
-        iocb.wait()
+    return rsp
 
-        # Handle completion: error, success, neither
-        if iocb.ioError:
-            # Error
-            rsp = { 'error': str( iocb.ioError ) }
 
-        elif iocb.ioResponse:
-            # Success
+def send_request( target_args, app ):
 
-            # Get the response PDU
-            apdu = iocb.ioResponse
+    # build a request
+    request = ReadPropertyRequest(
+        objectIdentifier=( target_args['type'], target_args['instance'] ),
+        propertyIdentifier=target_args['property']
+    )
+    request.pduDestination = Address( target_args['address'] )
 
-            # Extract the returned value
-            datatype = get_datatype( apdu.objectIdentifier[0], apdu.propertyIdentifier )
-            if issubclass( datatype, Array ) and (apdu.propertyArrayIndex is not None):
-                if apdu.propertyArrayIndex == 0:
-                    value = apdu.propertyValue.cast_out( Unsigned )
-                else:
-                    value = apdu.propertyValue.cast_out( datatype.subtype )
+    # make an IOCB
+    iocb = IOCB( request )
+
+    # give it to the application
+    app.request_io( iocb )
+
+    # wait for it to complete
+    iocb.wait()
+
+    # Handle completion: error, success, neither
+    if iocb.ioError:
+        # Error
+        result = 'error: ' + str( iocb.ioError )
+
+    elif iocb.ioResponse:
+        # Success
+
+        # Get the response PDU
+        apdu = iocb.ioResponse
+
+        # Extract the returned value
+        datatype = get_datatype( apdu.objectIdentifier[0], apdu.propertyIdentifier )
+        if issubclass( datatype, Array ) and (apdu.propertyArrayIndex is not None):
+            if apdu.propertyArrayIndex == 0:
+                result = apdu.propertyValue.cast_out( Unsigned )
             else:
-                value = apdu.propertyValue.cast_out( datatype )
-
-            # Load returned value into response
-            rsp = { 'value': value }
-
+                result = apdu.propertyValue.cast_out( datatype.subtype )
         else:
-            # Neither
-            rsp = { 'error': 'Request terminated unexpectedly' }
+            result = apdu.propertyValue.cast_out( datatype )
+
+    else:
+        # Neither
+        result = 'error: Request terminated unexpectedly'
+
+    rsp = { target_args['property']: result }
 
     return rsp
 

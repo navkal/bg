@@ -119,20 +119,26 @@ def sync_request( target_args ):
 
     # Issue the BACnet request
     try:
-        rsp = br.read_property( target_args )
+        rsp_data = br.read_property( target_args )
     except Exception as e:
-        rsp = { 'error': 'br.read_property() encountered exception: ' + str(e), 'value': '' }
+        rsp_data = { 'error': 'br.read_property() encountered exception: ' + str(e), target_args['property']: '', 'units': '' }
+
 
     # Update request entry in database.  (It will no longer exist if successor has deleted it due to timeout.)
     completion_time = time.time()
-    cur.execute( 'UPDATE Requests SET completed=?, completion_time=?, response=? WHERE id=?', ( 1, completion_time, rsp['value'], this_rq_id, ) )
+    cur.execute( 'UPDATE Requests SET completed=?, completion_time=?, response=? WHERE id=?', ( 1, completion_time, str( rsp_data[target_args['property']] ) + ' ' + rsp_data['units'], this_rq_id, ) )
     conn.commit()
 
-    # Add debug info to response
-    rsp['reponse_time'] = str( round( ( completion_time - start_time ) * 1000 ) ) + ' ms'
-    rsp['slept'] = [slept_1, slept_2, slept_3]
-    rsp['timed_out'] = timed_out
+    # Collect debug info
+    rsp_debug = {}
+    rsp_debug['reponse_time'] = str( round( ( completion_time - start_time ) * 1000 ) ) + ' ms'
+    rsp_debug['slept'] = [slept_1, slept_2, slept_3]
+    rsp_debug['timed_out'] = timed_out
 
+    # Build the response
+    rsp = {}
+    rsp['data'] = collections.OrderedDict( sorted( rsp_data.items() ) )
+    rsp['debug'] = collections.OrderedDict( sorted( rsp_debug.items() ) )
     rsp = collections.OrderedDict( sorted( rsp.items() ) )
 
     return rsp
@@ -150,9 +156,12 @@ if __name__ == '__main__':
 
     try:
         open_db()
+
     except:
         dc_rsp = { 'error': 'bg.open_db() failed' }
+
     else:
+
         try:
 
             target_args = {
