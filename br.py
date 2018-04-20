@@ -14,7 +14,7 @@ from bacpypes.object import get_datatype
 from bacpypes.constructeddata import Array
 from bacpypes.primitivedata import Unsigned
 
-_standalone = 0
+_standalone = 1
 
 def read_property( target_args ):
 
