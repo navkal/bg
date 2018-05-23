@@ -66,15 +66,15 @@ def get_value_and_units( target_args, app ):
 
     else:
 
-        error, message, rsp_value = send_request( target_args, app )
+        success, message, rsp_value = send_request( target_args, app )
 
-        if error:
-            rsp_units = { 'units': ''}
-        else:
+        if success:
             target_args['property'] = 'units'
             not_used_1, not_used_2, rsp_units = send_request( target_args, app )
+        else:
+            rsp_units = { 'units': ''}
 
-        rsp = { 'error': error, 'message': message, **rsp_value, **rsp_units }
+        rsp = { 'success': success, 'message': message, **rsp_value, **rsp_units }
 
     return rsp
 
@@ -100,13 +100,13 @@ def send_request( target_args, app ):
     # Handle completion: error, success, neither
     if iocb.ioError:
         # Error
-        error = True
+        success = False
         message = str( iocb.ioError )
         result = ''
 
     elif iocb.ioResponse:
         # Success
-        error = False
+        success = True
         message = ''
 
         # Get the response PDU
@@ -124,13 +124,13 @@ def send_request( target_args, app ):
 
     else:
         # Neither
-        error = True
+        success = False
         message = 'Request terminated unexpectedly'
         result = ''
 
     rsp = { target_args['property']: result }
 
-    return error, message, rsp
+    return success, message, rsp
 
 
 if __name__ == '__main__':
