@@ -122,7 +122,7 @@ def sync_request( target_args ):
     try:
         rsp_data = br.read_property( target_args )
     except Exception as e:
-        rsp_data = { 'error': 'br.read_property() encountered exception: ' + str(e), property: '', 'units': '' }
+        rsp_data = { 'success': False, 'message': 'br.read_property() encountered exception: ' + str(e), property: '', 'units': '' }
 
 
     # Update request entry in database.  (It will no longer exist if successor has deleted it due to timeout.)
@@ -140,6 +140,8 @@ def sync_request( target_args ):
     rsp = {}
     rsp['data'] = collections.OrderedDict( sorted( rsp_data.items() ) )
     rsp['debug'] = collections.OrderedDict( sorted( rsp_debug.items() ) )
+    rsp['success'] = True
+    rsp['message'] = ''
     rsp = collections.OrderedDict( sorted( rsp.items() ) )
 
     return rsp
@@ -159,7 +161,7 @@ if __name__ == '__main__':
         open_db()
 
     except:
-        dc_rsp = { 'error': 'bg.open_db() failed' }
+        dc_rsp = { 'success': False, 'message': 'bg.open_db() failed' }
 
     else:
 
@@ -175,7 +177,7 @@ if __name__ == '__main__':
             dc_rsp = sync_request( target_args )
 
         except:
-            dc_rsp = { 'error': 'bg.sync_request() failed' }
+            dc_rsp = { 'success': False, 'message': 'bg.sync_request() failed' }
 
     s_rsp = json.dumps( dc_rsp )
     print( s_rsp )
