@@ -61,8 +61,11 @@ def get_value_and_units( target_args, app ):
 
     if _standalone:
 
+        success = True
+        message = ''
         import random
-        rsp = { target_args['property']: random.randrange( 650000000, 720000000 ) / 10000000, 'units': 'foonits' }
+        rsp_value = { target_args['property']: random.randrange( 650000000, 720000000 ) / 10000000 }
+        rsp_units = { 'units': 'foonits'}
 
     else:
 
@@ -74,7 +77,7 @@ def get_value_and_units( target_args, app ):
         else:
             rsp_units = { 'units': ''}
 
-        rsp = { 'success': success, 'message': message, **rsp_value, **rsp_units }
+    rsp = { 'success': success, 'message': message, **rsp_value, **rsp_units }
 
     return rsp
 
