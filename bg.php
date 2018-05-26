@@ -35,6 +35,12 @@
     fclose( $file );
   }
 
+  // Set default type
+  if ( ! isset( $_REQUEST['type'] ) )
+  {
+    $_REQUEST['type'] = 'analogInput';
+  }
+
   // Set default property
   if ( ! isset( $_REQUEST['property'] ) )
   {
