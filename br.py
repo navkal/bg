@@ -1,7 +1,6 @@
 # Copyright 2018 BACnet Gateway.  All rights reserved.
 
-import netifaces
-from socket import gethostbyname, gethostname
+from host import get_host_address
 from warnings import catch_warnings, simplefilter
 from threading import Thread
 
@@ -53,27 +52,7 @@ def make_application():
         vendorIdentifier=15
     )
 
-    # Look for Ubuntu interface name
-    interfaces = netifaces.interfaces()
-
-    if 'ppp0' in interfaces:
-        # VPN interface
-        ifc_name = 'ppp0'
-    elif 'enp4s0' in interfaces:
-        # Ethernet interface
-        ifc_name = 'enp4s0'
-    else:
-        # Didn't find what we're looking for
-        ifc_name = ''
-
-    # Determine IP address
-    if ifc_name:
-        # Got a linux interface name.  Extract corresponding IP address.
-        addrs = netifaces.ifaddresses( ifc_name )
-        addr = addrs[netifaces.AF_INET][0]['addr']
-    else:
-        # Didn't get an Ubuntu interface name.  Use method of last resort.
-        addr = gethostbyname( gethostname() )
+    addr = get_host_address()
 
     # Make the application
     app = BIPSimpleApplication( dev, addr )
