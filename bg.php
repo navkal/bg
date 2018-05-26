@@ -29,7 +29,7 @@
 
     if ( ! $bFound )
     {
-      $sEcho = json_encode( 'NAE ' . "'" . $_REQUEST['nae'] . "'" . ' not found.' );
+      $sMessage = 'NAE ' . "'" . $_REQUEST['nae'] . "'" . ' not found.';
     }
 
     fclose( $file );
@@ -81,10 +81,12 @@
   }
   else
   {
-    if ( ! isset( $sEcho ) )
+    if ( ! isset( $sMessage ) )
     {
-      $sEcho = json_encode( 'BACnet Gateway request arguments missing' );
+      $sMessage = 'BACnet Gateway request arguments missing';
     }
+
+    $sEcho = json_encode( $sMessage );
   }
 
   echo $sEcho;
