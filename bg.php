@@ -3,6 +3,16 @@
 
   error_log( '==> request=' . print_r( $_REQUEST, true ) );
 
+  $aNaeAddressMap =
+  [
+    'ahs' => '10.12.0.250'
+  ];
+
+  if ( isset( $_REQUEST['nae'] ) and isset( $aNaeAddressMap[ $_REQUEST['nae'] ] ) )
+  {
+    $_REQUEST['address'] = $aNaeAddressMap[ $_REQUEST['nae'] ];
+  }
+
   $bGotAllArgs = isset(
     $_REQUEST['address'],
     $_REQUEST['type'],
