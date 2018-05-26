@@ -3,14 +3,14 @@
 
   error_log( '==> request=' . print_r( $_REQUEST, true ) );
 
-  // Map NAE name to IP address
-  if ( isset( $_REQUEST['nae'] ) )
+  // Map facility name to IP address
+  if ( isset( $_REQUEST['facility'] ) )
   {
     // Make sure we don't have an address argument
     unset( $_REQUEST['address'] );
 
-    // Open CSV file containing mappings from NAE names to IP addresses
-    $file = fopen( "nae_map.csv","r" );
+    // Open CSV file containing mappings from facility names to IP addresses
+    $file = fopen( "facility_map.csv","r" );
 
     // Traverse lines of the file until match is found
     $bFound = false;
@@ -20,7 +20,7 @@
       $aLine = fgetcsv( $file );
 
       // If there is a match, save mapping
-      if ( $aLine[0] == $_REQUEST['nae'] )
+      if ( $aLine[0] == $_REQUEST['facility'] )
       {
         $bFound = true;
         $_REQUEST['address'] = $aLine[1];
@@ -29,7 +29,7 @@
 
     if ( ! $bFound )
     {
-      $sMessage = 'NAE ' . "'" . $_REQUEST['nae'] . "'" . ' not found.';
+      $sMessage = 'Facility ' . "'" . $_REQUEST['facility'] . "'" . ' not found.';
     }
 
     fclose( $file );
