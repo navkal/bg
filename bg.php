@@ -3,15 +3,30 @@
 
   error_log( '==> request=' . print_r( $_REQUEST, true ) );
 
-  $aNaeAddressMap =
-  [
-    'ahs' => '10.12.0.250'
-  ];
-
-  if ( isset( $_REQUEST['nae'] ) and isset( $aNaeAddressMap[ $_REQUEST['nae'] ] ) )
+  // Map NAE name to IP address
+  if ( isset( $_REQUEST['nae'] ) )
   {
-    $_REQUEST['address'] = $aNaeAddressMap[ $_REQUEST['nae'] ];
+    // Open CSV file containing mappings from NAE names to IP addresses
+    $file = fopen( "nae_map.csv","r" );
+
+    // Traverse lines of the file until match is found
+    $bFound = false;
+    while( ! $bFound && ! feof( $file ) )
+    {
+      // Get next line
+      $aLine = fgetcsv( $file );
+
+      // If there is a match, save mapping
+      if ( $aLine[0] == $_REQUEST['nae'] )
+      {
+        $bFound = true;
+        $_REQUEST['address'] = $aLine[1];
+      }
+    }
+
+    fclose( $file );
   }
+
 
   $bGotAllArgs = isset(
     $_REQUEST['address'],
