@@ -75,7 +75,7 @@ def make_application():
         # Didn't get an Ubuntu interface name.  Use method of last resort.
         addr = gethostbyname( gethostname() )
 
-    # Make the applicatoin
+    # Make the application
     app = BIPSimpleApplication( dev, addr )
 
     return app
