@@ -6,6 +6,9 @@
   // Map NAE name to IP address
   if ( isset( $_REQUEST['nae'] ) )
   {
+    // Make sure we don't have an address argument
+    unset( $_REQUEST['address'] );
+
     // Open CSV file containing mappings from NAE names to IP addresses
     $file = fopen( "nae_map.csv","r" );
 
@@ -22,6 +25,11 @@
         $bFound = true;
         $_REQUEST['address'] = $aLine[1];
       }
+    }
+
+    if ( ! $bFound )
+    {
+      $sEcho = json_encode( 'NAE ' . "'" . $_REQUEST['nae'] . "'" . ' not found.' );
     }
 
     fclose( $file );
@@ -73,7 +81,10 @@
   }
   else
   {
-    $sEcho = json_encode( 'BACnet Gateway request arguments missing' );
+    if ( ! isset( $sEcho ) )
+    {
+      $sEcho = json_encode( 'BACnet Gateway request arguments missing' );
+    }
   }
 
   echo $sEcho;
