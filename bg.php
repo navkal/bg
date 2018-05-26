@@ -35,6 +35,11 @@
     fclose( $file );
   }
 
+  // Set default property
+  if ( ! isset( $_REQUEST['property'] ) )
+  {
+    $_REQUEST['property'] = 'presentValue';
+  }
 
   $bGotAllArgs = isset(
     $_REQUEST['address'],
