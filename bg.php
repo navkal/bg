@@ -10,7 +10,7 @@
     unset( $_REQUEST['address'] );
 
     // Open CSV file containing mappings from facility names to IP addresses
-    $file = fopen( "facility_map.csv","r" );
+    $file = fopen( 'facility_map.csv', 'r' );
 
     // Traverse lines of the file until match is found
     $bFound = false;
