@@ -10,7 +10,7 @@
     unset( $_REQUEST['address'] );
 
     // Open CSV file containing mappings from facility names to IP addresses
-    $file = fopen( 'facility_map.csv', 'r' );
+    $file = fopen( 'agents.csv', 'r' );
 
     // Read the prefix
     $aLine = fgetcsv( $file );
