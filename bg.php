@@ -12,6 +12,10 @@
     // Open CSV file containing mappings from facility names to IP addresses
     $file = fopen( 'facility_map.csv', 'r' );
 
+    // Read the prefix
+    $aLine = fgetcsv( $file );
+    $sPrefix = $aLine[0];
+
     // Traverse lines of the file until match is found
     $bFound = false;
     while( ! $bFound && ! feof( $file ) )
@@ -19,11 +23,11 @@
       // Get next line
       $aLine = fgetcsv( $file );
 
-      // If there is a match, save mapping
+      // If there is a match, set parameter
       if ( $aLine[0] == $_REQUEST['facility'] )
       {
         $bFound = true;
-        $_REQUEST['address'] = $aLine[1];
+        $_REQUEST['address'] = long2ip( hexdec( $sPrefix . $aLine[1] ) );
       }
     }
 
