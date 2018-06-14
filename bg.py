@@ -69,7 +69,7 @@ def sync_request( target_args ):
     cur.execute( 'SELECT min_delay_sec, max_poll_sec FROM Constants' )
     rows = cur.fetchall()
     row = rows[0]
-    min_delay_sec = row[0]
+    min_delay_sec = 0.1 if br._standalone else row[0]
     max_poll_sec = row[1]
 
     slept_1 = slept_2 = slept_3 = False
