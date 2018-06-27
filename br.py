@@ -69,8 +69,9 @@ def get_value_and_units( target_args, app ):
         success = True
         message = ''
         import random
-        rsp_value = { target_args['property']: random.randrange( 650000000, 720000000 ) / 10000000 }
-        rsp_units = { 'units': 'foonits'}
+        value = random.randrange( 250000000, 990000000 ) / 10000000
+        rsp_value = { target_args['property']: value }
+        rsp_units = { 'units': 'foonits'} if ( int( value ) % 4 ) else { 'units': 'poonits'}
 
     else:
 
