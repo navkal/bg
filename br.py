@@ -80,6 +80,7 @@ def get_value_and_units( target_args, app ):
         if success:
             target_args['property'] = 'units'
             not_used_1, not_used_2, rsp_units = send_request( target_args, app )
+            rsp_units = translate_units( rsp_units )
         else:
             rsp_units = { 'units': ''}
 
@@ -141,6 +142,22 @@ def send_request( target_args, app ):
     rsp = { target_args['property']: result }
 
     return success, message, rsp
+
+
+def translate_units( rsp_units ):
+
+    dUnits = {
+        'degreesFahrenheit': '&deg;F',
+        'kilowattHours': 'kWh',
+        'kilowatts': 'kW',
+        'partsPerMillion': 'ppm',
+        'watts': 'W'
+    }
+
+    if rsp_units['units'] in dUnits:
+        rsp_units['units'] = dUnits[rsp_units['units']]
+
+    return rsp_units
 
 
 if __name__ == '__main__':
