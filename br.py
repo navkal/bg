@@ -146,7 +146,7 @@ def send_request( target_args, app ):
 
 def translate_units( rsp_units ):
 
-    dUnits = {
+    dcUnits = {
         'degreesFahrenheit': '&deg;F',
         'kilowattHours': 'kWh',
         'kilowatts': 'kW',
@@ -154,8 +154,8 @@ def translate_units( rsp_units ):
         'watts': 'W'
     }
 
-    if rsp_units['units'] in dUnits:
-        rsp_units['units'] = dUnits[rsp_units['units']]
+    if rsp_units['units'] in dcUnits:
+        rsp_units['units'] = dcUnits[rsp_units['units']]
 
     return rsp_units
 
