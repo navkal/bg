@@ -147,7 +147,7 @@ def send_request( target_args, app ):
 def translate_units( rsp_units ):
 
     dcUnits = {
-        'degreesFahrenheit': '&deg;F',
+        'degreesFahrenheit': 'deg F',
         'kilowattHours': 'kWh',
         'kilowatts': 'kW',
         'partsPerMillion': 'ppm',
