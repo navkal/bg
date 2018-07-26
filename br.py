@@ -15,7 +15,8 @@ from bacpypes.constructeddata import Array
 from bacpypes.primitivedata import Unsigned
 
 
-_standalone = 0
+_standalone = 1
+_standalone_meter = 0
 
 
 def read_property( target_args ):
@@ -68,10 +69,19 @@ def get_value_and_units( target_args, app ):
 
         success = True
         message = ''
-        import random
-        value = random.randrange( 250000000, 990000000 ) / 10000000
+
+        if _standalone_meter:
+            import time
+            t = time.time()
+            zeroes = 10 ** _standalone_meter
+            value = t - int( t / zeroes ) * zeroes
+            rsp_units = { 'units': 'foonits'}
+        else:
+            import random
+            value = random.randrange( 250000000, 990000000 ) / 10000000
+            rsp_units = { 'units': ( 'foonits' if ( int( value ) % 10 ) else 'doonits' ) }
+
         rsp_value = { target_args['property']: value }
-        rsp_units = { 'units': 'foonits'} if ( int( value ) % 4 ) else { 'units': 'poonits'}
 
     else:
 
