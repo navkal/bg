@@ -17,6 +17,7 @@ from bacpypes.primitivedata import Unsigned
 
 _standalone = 0
 _standalone_meter = 3
+_standalone_doonits = 9
 
 
 def read_property( target_args ):
@@ -75,7 +76,10 @@ def get_value_and_units( target_args, app ):
             t = time.time()
             zeroes = 10 ** _standalone_meter
             value = t - int( t / zeroes ) * zeroes
-            rsp_units = { 'units': 'foonits'}
+            if _standalone_doonits:
+                rsp_units = { 'units': ( 'foonits' if ( int( value ) % _standalone_doonits ) else 'doonits' ) }
+            else:
+                rsp_units = { 'units': 'foonits'}
         else:
             import random
             value = random.randrange( 250000000, 990000000 ) / 10000000
