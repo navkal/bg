@@ -1,5 +1,6 @@
 <?php
   // Copyright 2018 BACnet Gateway.  All rights reserved.
+  require_once $_SERVER["DOCUMENT_ROOT"] . "/../common/util.php";
 
   error_log( '==> request=' . print_r( $_REQUEST, true ) );
 
@@ -63,7 +64,7 @@
     $t0 = microtime( true );
 
     // Format command
-    $command = quote( getenv( "PYTHON" ) ) . ' bg.py'
+    $command = SUDO . quote( getenv( "PYTHON" ) ) . ' bg.py'
       . ' -a ' . $_REQUEST['address']
       . ' -t ' . $_REQUEST['type']
       . ' -i ' . $_REQUEST['instance']
@@ -105,30 +106,4 @@
   }
 
   echo $sEcho;
-
-
-  ///////////////////////////////////////////////////
-
-
-  function quote( $s, $bTrim = true )
-  {
-    // Optionally trim the string
-    if ( $bTrim )
-    {
-      $s = trim( $s );
-    }
-
-    // If string is not already quoted...
-    if ( empty( $s ) || ! ( ( $s[0] == '"' ) && ( substr( $s, -1 ) == '"' ) ) )
-    {
-      // Replace all double quotes with single quotes
-      $s = str_replace( '"', "'", $s );
-
-      // Enclose string in quotes
-      $s = '"' . $s . '"';
-    }
-
-    return $s;
-  }
-
 ?>
