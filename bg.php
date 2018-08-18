@@ -4,6 +4,9 @@
 
   error_log( '==> request=' . print_r( $_REQUEST, true ) );
 
+  // Determine whether caller is requesting live data
+  $bLive = isset( $_REQUEST['live'] );
+
   // Map facility name to IP address
   if ( isset( $_REQUEST['facility'] ) )
   {
@@ -63,25 +66,36 @@
   {
     $t0 = microtime( true );
 
-    // Format command
-    $command = SUDO . quote( getenv( "PYTHON" ) ) . ' bg.py'
-      . ' -a ' . $_REQUEST['address']
-      . ' -t ' . $_REQUEST['type']
-      . ' -i ' . $_REQUEST['instance']
-      . ' -p ' . $_REQUEST['property'];
-
-    error_log( "===> command=" . $command );
-    exec( $command, $output, $status );
-    error_log( "===> output=" . print_r( $output, true ) );
-
-    $iRspOffset = count( $output ) - 1;
-    if ( $iRspOffset >= 0 )
+    if ( ! $bLive )
     {
-      $tBacnetRsp = json_decode( $output[ $iRspOffset ] );
+      // Try to retrieve from Building Monitor cache
+
+
+      // Build artificial BACnet response from cache response
     }
-    else
+
+    if ( ! isset( $tBacnetRsp ) )
     {
-      $tBacnetRsp = [ 'status' => $status ];
+      // Format command
+      $command = SUDO . quote( getenv( "PYTHON" ) ) . ' bg.py'
+        . ' -a ' . $_REQUEST['address']
+        . ' -t ' . $_REQUEST['type']
+        . ' -i ' . $_REQUEST['instance']
+        . ' -p ' . $_REQUEST['property'];
+
+      error_log( "===> command=" . $command );
+      exec( $command, $output, $status );
+      error_log( "===> output=" . print_r( $output, true ) );
+
+      $iRspOffset = count( $output ) - 1;
+      if ( $iRspOffset >= 0 )
+      {
+        $tBacnetRsp = json_decode( $output[ $iRspOffset ] );
+      }
+      else
+      {
+        $tBacnetRsp = [ 'status' => $status ];
+      }
     }
 
 
