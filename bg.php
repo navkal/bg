@@ -69,9 +69,28 @@
     if ( ! $bLive )
     {
       // Try to retrieve from Building Monitor cache
+      if ( ( $_REQUEST['type'] == 'analogInput' ) && ( $_REQUEST['property'] == 'presentValue' ) )
+      {
+        // Format command
+        $command = SUDO . quote( getenv( "PYTHON" ) ) . ' ../bgt/cache/get_value.py'
+          . ' -f ' . $_REQUEST['facility']
+          . ' -i ' . $_REQUEST['instance'];
+
+        error_log( "===> command=" . $command );
+        exec( $command, $output, $status );
+        error_log( "===> output=" . print_r( $output, true ) );
+
+        // Artificially construct BACnet response from cache response
 
 
-      // Build artificial BACnet response from cache response
+
+
+
+
+
+
+
+      }
     }
 
     if ( ! isset( $tBacnetRsp ) )
