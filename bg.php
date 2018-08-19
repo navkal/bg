@@ -4,9 +4,6 @@
 
   error_log( '==> request=' . print_r( $_REQUEST, true ) );
 
-  // Determine whether caller is requesting live data
-  $bLive = isset( $_REQUEST['live'] );
-
   // Map facility name to IP address
   if ( isset( $_REQUEST['facility'] ) )
   {
@@ -66,35 +63,35 @@
   {
     $t0 = microtime( true );
 
-    if ( ! $bLive )
+    // Determine whether to forego cached data
+    error_log( '==========> type=' . $_REQUEST['type'] . ' prop=' . $_REQUEST['property']  . ' live=' . $_REQUEST['live'] );
+    $bLive = ( isset( $_REQUEST['live'] ) && $_REQUEST['live'] ) || ( $_REQUEST['type'] != 'analogInput' ) || ( $_REQUEST['property'] != 'presentValue' );
+
+    if ( ! $bLive)
     {
+      error_log( '==========> CACHE' );
       // Try to retrieve from Building Monitor cache
-      if ( ( $_REQUEST['type'] == 'analogInput' ) && ( $_REQUEST['property'] == 'presentValue' ) )
-      {
-        // Format command
-        $command = SUDO . quote( getenv( "PYTHON" ) ) . ' ../bgt/cache/get_value.py'
-          . ' -f ' . $_REQUEST['facility']
-          . ' -i ' . $_REQUEST['instance'];
 
-        error_log( "===> command=" . $command );
-        exec( $command, $output, $status );
-        error_log( "===> output=" . print_r( $output, true ) );
+      // Format command
+      $command = SUDO . quote( getenv( "PYTHON" ) ) . ' bm.py'
+        . ' -f ' . $_REQUEST['facility']
+        . ' -i ' . $_REQUEST['instance'];
 
-        // Artificially construct BACnet response from cache response
+      error_log( "===> command=" . $command );
+      exec( $command, $output, $status );
+      error_log( "===> output=" . print_r( $output, true ) );
 
+      $tBmRsp = json_decode( $output[ count( $output ) - 1 ] );
 
-
-
-
-
-
-
-
-      }
+      // Update flag to get live data if cache request failed
+      $bLive = ! $tBmRsp->success;
     }
 
-    if ( ! isset( $tBacnetRsp ) )
+    if ( $bLive )
     {
+      error_log( '==========> LIVE' );
+      // Did not (or could not) retrieve value from cache.  Get live value.
+
       // Format command
       $command = SUDO . quote( getenv( "PYTHON" ) ) . ' bg.py'
         . ' -a ' . $_REQUEST['address']
@@ -105,24 +102,24 @@
       error_log( "===> command=" . $command );
       exec( $command, $output, $status );
       error_log( "===> output=" . print_r( $output, true ) );
+    }
 
-      $iRspOffset = count( $output ) - 1;
-      if ( $iRspOffset >= 0 )
-      {
-        $tBacnetRsp = json_decode( $output[ $iRspOffset ] );
-      }
-      else
-      {
-        $tBacnetRsp = [ 'status' => $status ];
-      }
+    $iRspOffset = count( $output ) - 1;
+    if ( $iRspOffset >= 0 )
+    {
+      $tBacnetRsp = json_decode( $output[ $iRspOffset ] );
+    }
+    else
+    {
+      $tBacnetRsp = [ 'status' => $status ];
     }
 
 
     $tGatewayRsp =
-      [
-        'bacnet_response' => $tBacnetRsp,
-        'service_time' => round( 1000 * ( microtime( true ) - $t0 ) ) . ' ms'
-      ];
+    [
+      'bacnet_response' => $tBacnetRsp,
+      'service_time' => round( 1000 * ( microtime( true ) - $t0 ) ) . ' ms'
+    ];
 
     $sJson = json_encode( $tGatewayRsp );
 
