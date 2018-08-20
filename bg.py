@@ -9,7 +9,7 @@ import json
 import br
 
 
-db = 'bg.sqlite'
+db = '../bg_db/queue.sqlite'
 conn = None
 cur = None
 
