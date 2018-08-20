@@ -64,12 +64,10 @@
     $t0 = microtime( true );
 
     // Determine whether to forego cached data
-    error_log( '==========> type=' . $_REQUEST['type'] . ' prop=' . $_REQUEST['property']  . ' live=' . $_REQUEST['live'] );
     $bLive = isset( $_REQUEST['live'] ) || ( $_REQUEST['type'] != 'analogInput' ) || ( $_REQUEST['property'] != 'presentValue' );
 
     if ( ! $bLive)
     {
-      error_log( '==========> CACHE' );
       // Try to retrieve from Building Monitor cache
 
       // Format command
@@ -89,7 +87,6 @@
 
     if ( $bLive )
     {
-      error_log( '==========> LIVE' );
       // Did not (or could not) retrieve value from cache.  Get live value.
 
       // Format command
