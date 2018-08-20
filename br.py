@@ -17,7 +17,7 @@ from bacpypes.primitivedata import Unsigned
 
 _standalone = 0
 _standalone_meter = 3
-_standalone_doonits = 9
+_standalone_doonits = 0
 
 
 def read_property( target_args ):
