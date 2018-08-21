@@ -1,11 +1,15 @@
 # Copyright 2018 BACnet Gateway.  All rights reserved.
 
+import time
 import os
 import argparse
 import sqlite3
-import time
+import collections
 import json
 
+
+start_time = time.time()
+msg = None
 
 
 db = '../bg_db/cache.sqlite'
@@ -20,8 +24,6 @@ if os.path.exists( db ):
     parser.add_argument( '-p', dest='property' )
     args = parser.parse_args()
 
-    cached_value = { 'address': args.address, 'type': args.type, 'instance': args.instance, 'requestedProperty': args.property }
-
     # Connect to the database
     conn = sqlite3.connect( db )
     cur = conn.cursor()
@@ -29,7 +31,7 @@ if os.path.exists( db ):
     # Read cache
     cur.execute( '''
         SELECT
-            Cache.id, Cache.value, Units.units
+            Cache.id, Cache.value, Units.units, Cache.update_timestamp
         FROM Cache
             LEFT JOIN Addresses ON Cache.address_id=Addresses.id
             LEFT JOIN Types ON Cache.type_id=Types.id
@@ -42,16 +44,42 @@ if os.path.exists( db ):
 
     if row:
         # Update access timestamp
-        cur.execute( 'UPDATE Cache SET access_timestamp=? WHERE id=?', ( int( time.time() ), row[0] ) )
+        cur.execute( 'UPDATE Cache SET access_timestamp=? WHERE id=?', ( round( time.time() ), row[0] ) )
+        conn.commit()
 
-        # Build return value
-        cached_value[args.property] = row[1]
-        cached_value['units'] = row[2]
-        cached_value['success'] = True
-        cached_value['message'] = ''
+        # Collect data
+        rsp_data = { 'address': args.address, 'type': args.type, 'instance': args.instance, 'requestedProperty': args.property }
+        rsp_data[args.property] = row[1]
+        rsp_data['units'] = row[2]
+        rsp_data['timestamp'] = row[3] * 1000
+        rsp_data['success'] = True
+        rsp_data['message'] = ''
+
+        # Collect debug info
+        rsp_debug = {}
+        rsp_debug['response_time'] = str( round( ( time.time() - start_time ) * 1000 ) ) + ' ms'
+        rsp_debug['slept'] = [False, False, False]
+        rsp_debug['timed_out'] = False
+
+        # Build the response
+        rsp = {}
+        rsp['data'] = collections.OrderedDict( sorted( rsp_data.items() ) )
+        rsp['debug'] = collections.OrderedDict( sorted( rsp_debug.items() ) )
+        rsp['success'] = True
+        rsp['message'] = ''
+        rsp = collections.OrderedDict( sorted( rsp.items() ) )
+
     else:
-        cached_value['success'] = False
-        cached_value['message'] = 'Requested value not found in cache'
+        msg = 'No data'
+
+else:
+    msg = 'No cache'
+
+
+if msg:
+    cache_rsp = { 'success': False, 'message': msg }
+else:
+    cache_rsp = rsp
 
 # Return result
-print( json.dumps( cached_value ) )
+print( json.dumps( cache_rsp ) )

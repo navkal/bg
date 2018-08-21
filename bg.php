@@ -71,7 +71,7 @@
       // Try to retrieve from Building Monitor cache
 
       // Format command
-      $command = SUDO . quote( getenv( "PYTHON" ) ) . ' cache/bm.py'
+      $command = SUDO . quote( getenv( "PYTHON" ) ) . ' cache/read_cache.py'
         . ' -f ' . $_REQUEST['facility']
         . ' -i ' . $_REQUEST['instance'];
 

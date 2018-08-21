@@ -87,7 +87,7 @@ def write_value():
     row = cur.fetchone()
 
     units_id = db_util.save_field( 'Units', 'units', args.units, cur )
-    update_timestamp = int( time.time() )
+    update_timestamp = round( time.time() )
 
     if row:
 
