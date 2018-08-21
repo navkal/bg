@@ -75,6 +75,7 @@
         . ' -f ' . $_REQUEST['facility']
         . ' -i ' . $_REQUEST['instance'];
 
+      // Execute command
       error_log( "===> command=" . $command );
       exec( $command, $output, $status );
       error_log( "===> output=" . print_r( $output, true ) );
@@ -95,15 +96,16 @@
         . ' -i ' . $_REQUEST['instance']
         . ' -p ' . $_REQUEST['property'];
 
+      // Execute command
       error_log( "===> command=" . $command );
       exec( $command, $output, $status );
       error_log( "===> output=" . print_r( $output, true ) );
 
       $tLiveRsp = json_decode( $output[ count( $output ) - 1 ] );
-      if ( $tLiveRsp->success )
+      if ( $tLiveRsp->success && $tLiveRsp->data->success )
       {
         // Save result in cache
-        writeCache();
+        writeCache( (array) $tLiveRsp->data );
       }
     }
 
@@ -141,19 +143,25 @@
   echo $sEcho;
 
 
+  ////////////////////////////////////////////
 
-
-
-
-  ////////////////
-  function writeCache()
+  function writeCache( $aData )
   {
     error_log( '==> ===> WRITE CACHE: request=' . print_r( $_REQUEST, true ) );
+    error_log( '==> ===> WRITE CACHE: data=' . print_r( $aData, true ) );
+
+    // Format command
+    $command = SUDO . quote( getenv( "PYTHON" ) ) . ' cache/write_cache.py'
+      . ' -a ' . $_REQUEST['address']
+      . ' -t ' . $_REQUEST['type']
+      . ' -i ' . $_REQUEST['instance']
+      . ' -p ' . $_REQUEST['property']
+      . ' -v ' . $aData[$_REQUEST['property']]
+      . ' -u ' . $aData['units'];
+
+    // Execute command
+    error_log( "===> command=" . $command );
+    exec( $command, $output, $status );
+    error_log( "===> output=" . print_r( $output, true ) );
   }
-
-
-
-
-
-
 ?>
