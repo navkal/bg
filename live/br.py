@@ -15,7 +15,7 @@ from bacpypes.constructeddata import Array
 from bacpypes.primitivedata import Unsigned
 
 
-_standalone = 1
+_standalone = 0
 _standalone_meter = 3
 _standalone_doonits = 0
 
