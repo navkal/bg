@@ -79,10 +79,9 @@
       exec( $command, $output, $status );
       error_log( "===> output=" . print_r( $output, true ) );
 
-      $tBmRsp = json_decode( $output[ count( $output ) - 1 ] );
-
-      // Update flag to get live data if cache request failed
-      $bLive = ! $tBmRsp->success;
+      // Determine whether to retry with live request
+      $tCacheRsp = json_decode( $output[ count( $output ) - 1 ] );
+      $bLive = ! $tCacheRsp->success;
     }
 
     if ( $bLive )
@@ -99,6 +98,13 @@
       error_log( "===> command=" . $command );
       exec( $command, $output, $status );
       error_log( "===> output=" . print_r( $output, true ) );
+
+      $tLiveRsp = json_decode( $output[ count( $output ) - 1 ] );
+      if ( $tLiveRsp->success )
+      {
+        // Save result in cache
+        writeCache();
+      }
     }
 
     $iRspOffset = count( $output ) - 1;
@@ -133,4 +139,21 @@
   }
 
   echo $sEcho;
+
+
+
+
+
+
+  ////////////////
+  function writeCache()
+  {
+    error_log( '==> ===> WRITE CACHE: request=' . print_r( $_REQUEST, true ) );
+  }
+
+
+
+
+
+
 ?>
