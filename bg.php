@@ -72,8 +72,10 @@
 
       // Format command
       $command = SUDO . quote( getenv( "PYTHON" ) ) . ' cache/read_cache.py'
-        . ' -f ' . $_REQUEST['facility']
-        . ' -i ' . $_REQUEST['instance'];
+        . ' -a ' . $_REQUEST['address']
+        . ' -t ' . $_REQUEST['type']
+        . ' -i ' . $_REQUEST['instance']
+        . ' -p ' . $_REQUEST['property'];
 
       // Execute command
       error_log( "===> command=" . $command );
