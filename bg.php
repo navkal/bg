@@ -90,7 +90,7 @@
       // Did not (or could not) retrieve value from cache.  Get live value.
 
       // Format command
-      $command = SUDO . quote( getenv( "PYTHON" ) ) . ' bg.py'
+      $command = SUDO . quote( getenv( "PYTHON" ) ) . ' live/bg.py'
         . ' -a ' . $_REQUEST['address']
         . ' -t ' . $_REQUEST['type']
         . ' -i ' . $_REQUEST['instance']
