@@ -8,13 +8,8 @@ import sys
 sys.path.append( 'util' )
 import db_util
 
-conn = None
-cur = None
-
 
 def open_db():
-    global conn
-    global cur
 
     db = '../bg_db/cache.sqlite'
 
@@ -73,7 +68,7 @@ def open_db():
 
         conn.commit()
 
-    return
+    return conn, cur
 
 
 def write_value():
@@ -125,5 +120,5 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    open_db()
+    conn, cur = open_db()
     write_value()
