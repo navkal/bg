@@ -111,16 +111,16 @@ if __name__ == '__main__':
         # If database exists...
         if os.path.exists( db ):
 
+            # Open database
+            conn = sqlite3.connect( db )
+            cur = conn.cursor()
+
             # Get command line arguments
             parser = argparse.ArgumentParser( description='Update cache of recently requested BACnet values', add_help=False )
             parser.add_argument( '-h', dest='hostname' )
             parser.add_argument( '-p', dest='port' )
             parser.add_argument( '-s', dest='sleep_interval', type=int )
             args = parser.parse_args()
-
-            # Open database
-            conn = sqlite3.connect( db )
-            cur = conn.cursor()
 
             # Update cache continuously
             while True:
