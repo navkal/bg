@@ -14,6 +14,7 @@ log_filename = None
 
 
 def update_cache():
+    start_time = time.time()
 
     cur.execute( '''
         SELECT
@@ -56,7 +57,7 @@ def update_cache():
             log( 'Updated ' + str( row ) )
             n_updated += 1
 
-    return n_deleted, n_updated, len( rows )
+    log( 'Deleted ' + str( n_deleted ) + ' and updated ' + str( n_updated ) + ' of ' + str( len( rows ) ) + ' entries.  Elapsed time: ' + str( datetime.timedelta( seconds=int( time.time() - start_time ) ) ) )
 
 
 def post_request( address, type, instance, property ):
@@ -124,6 +125,4 @@ if __name__ == '__main__':
 
             # Update cache continuously
             while True:
-                start_time = time.time()
-                n_deleted, n_updated, n_entries = update_cache()
-                log( 'Deleted ' + str( n_deleted ) + ' and updated ' + str( n_updated ) + ' of ' + str( n_entries ) + ' entries.  Elapsed time: ' + str( datetime.timedelta( seconds=int( time.time() - start_time ) ) ) )
+                update_cache()
