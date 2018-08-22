@@ -46,7 +46,6 @@ def update_cache():
             cur.execute( 'DELETE FROM Cache WHERE id=?', ( row[0], ) )
             conn.commit()
 
-            log( 'Deleted ' + str( row ) )
             n_deleted += 1
 
         elif stale > stale_max:
@@ -54,7 +53,6 @@ def update_cache():
             # Entry is stale; post request to update it
             post_request( row[1], row[2], row[3], row[4] )
 
-            log( 'Updated ' + str( row ) )
             n_updated += 1
 
     if n_deleted or n_updated:
