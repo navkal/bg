@@ -7,7 +7,7 @@ import time
 import datetime
 import requests
 
-idle_max = datetime.timedelta( days=5 )
+idle_max = datetime.timedelta( days=7 )
 stale_max = datetime.timedelta( minutes=30 )
 
 log_filename = None
