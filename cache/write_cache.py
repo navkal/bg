@@ -100,8 +100,9 @@ def write_value():
         address_id = db_util.save_field( 'Addresses', 'address', args.address, cur )
         type_id = db_util.save_field( 'Types', 'type', args.type, cur )
         property_id = db_util.save_field( 'Properties', 'property', args.property, cur )
+        access_timestamp = update_timestamp
         cur.execute( 'INSERT INTO Cache ( address_id, type_id, instance, property_id, value, units_id, update_timestamp, access_timestamp ) VALUES (?,?,?,?,?,?,?,?)',
-            ( address_id, type_id, args.instance, property_id, args.value, units_id, update_timestamp, 0  ) )
+            ( address_id, type_id, args.instance, property_id, args.value, units_id, update_timestamp, access_timestamp ) )
 
     conn.commit()
 

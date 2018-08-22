@@ -4,14 +4,12 @@ import os
 import argparse
 import sqlite3
 import time
-from datetime import timedelta
+import datetime
 import requests
 import json
 
-import sys
-sys.path.append( '../util' )
-import db_util
-
+idle_max = datetime.timedelta( days=5 )
+stale_max = datetime.timedelta( minutes=30 )
 
 log_filename = None
 
@@ -20,7 +18,7 @@ def update_cache():
 
     cur.execute( '''
         SELECT
-            Cache.id, Addresses.address, Types.type, Cache.instance, Properties.property
+            Cache.id, Addresses.address, Types.type, Cache.instance, Properties.property, Cache.update_timestamp, Cache.access_timestamp
         FROM Cache
             LEFT JOIN Addresses ON Cache.address_id=Addresses.id
             LEFT JOIN Types ON Cache.type_id=Types.id
@@ -29,21 +27,39 @@ def update_cache():
 
     rows = cur.fetchall()
 
+    n_deleted = 0
+    n_updated = 0
+    n_entries = len( rows )
+
     for row in rows:
+
+        # Wait
         time.sleep( args.sleep_interval )
-        print( row )
-        value, units = get_value( row[1], row[2], row[3], row[4] )
-        print( value, units )
 
-        units_id = db_util.save_field( 'Units', 'units', units, cur )
-        cur.execute( 'UPDATE Cache SET value=?, units_id=? WHERE id=?', ( value, units_id, row[0] ) )
-        conn.commit()
+        # Calculate time intervals
+        now = datetime.datetime.now()
+        stale = now - datetime.datetime.fromtimestamp( row[5] )
+        idle = now - datetime.datetime.fromtimestamp( row[6] )
+
+        if idle > idle_max:
+
+            # Entry has not been used; delete it
+            cur.execute( 'DELETE FROM Cache WHERE id=?', ( row[0], ) )
+            conn.commit()
+            n_deleted += 1
+
+        elif stale > stale_max:
+
+            # Entry is stale; post request to update it
+            success = post_request( row[1], row[2], row[3], row[4] )
+            n_updated += 1
+
+    return n_deleted, n_updated, n_entries
 
 
-def get_value( address, type, instance, property ):
+def post_request( address, type, instance, property ):
 
-    value = None
-    units = None
+    success = False
 
     # Set up request arguments
     bg_args = {
@@ -54,7 +70,7 @@ def get_value( address, type, instance, property ):
         'live': True
     }
 
-    # Issue request to HTTP service
+    # Issue request to BACnet Gateway
     url = 'http://' + args.hostname + ':' + str( args.port )
     bg_rsp = requests.post( url, data=bg_args )
 
@@ -70,11 +86,10 @@ def get_value( address, type, instance, property ):
         data = bn_rsp['data']
 
         if data['success']:
-            value = data['presentValue']
-            units = data['units']
+            success = True
 
-    return value, units
-
+    # Return status
+    return success
 
 
 def log( msg ):
@@ -128,5 +143,5 @@ if __name__ == '__main__':
             # Update cache continuously
             while True:
                 start_time = time.time()
-                update_cache()
-                log( 'Updated all values.  Elapsed time: ' + str( timedelta( seconds=int( time.time() - start_time ) ) ) )
+                n_deleted, n_updated, n_entries = update_cache()
+                log( 'Deleted ' + str( n_deleted ) + ' and updated ' + str( n_updated ) + ' of ' + str( n_entries ) + ' entries.  Elapsed time: ' + str( datetime.timedelta( seconds=int( time.time() - start_time ) ) ) )
