@@ -9,8 +9,8 @@ import requests
 import json
 
 import sys
-sys.path.append( '../live' )
-import bg
+sys.path.append( '../util' )
+import db_util
 
 
 log_filename = None
@@ -26,6 +26,7 @@ def update_cache():
             LEFT JOIN Types ON Cache.type_id=Types.id
             LEFT JOIN Properties ON Cache.property_id=Properties.id
     ''' )
+
     rows = cur.fetchall()
 
     for row in rows:
@@ -33,6 +34,10 @@ def update_cache():
         print( row )
         value, units = get_value( row[1], row[2], row[3], row[4] )
         print( value, units )
+
+        units_id = db_util.save_field( 'Units', 'units', units, cur )
+        cur.execute( 'UPDATE Cache SET value=?, units_id=? WHERE id=?', ( value, units_id, row[0] ) )
+        conn.commit()
 
 
 def get_value( address, type, instance, property ):
