@@ -6,7 +6,6 @@ import sqlite3
 import time
 import datetime
 import requests
-import json
 
 idle_max = datetime.timedelta( days=5 )
 stale_max = datetime.timedelta( minutes=30 )
@@ -29,7 +28,6 @@ def update_cache():
 
     n_deleted = 0
     n_updated = 0
-    n_entries = len( rows )
 
     for row in rows:
 
@@ -46,20 +44,22 @@ def update_cache():
             # Entry has not been used; delete it
             cur.execute( 'DELETE FROM Cache WHERE id=?', ( row[0], ) )
             conn.commit()
+
+            log( 'Deleted ' + str( row ) )
             n_deleted += 1
 
         elif stale > stale_max:
 
             # Entry is stale; post request to update it
-            success = post_request( row[1], row[2], row[3], row[4] )
+            post_request( row[1], row[2], row[3], row[4] )
+
+            log( 'Updated ' + str( row ) )
             n_updated += 1
 
-    return n_deleted, n_updated, n_entries
+    return n_deleted, n_updated, len( rows )
 
 
 def post_request( address, type, instance, property ):
-
-    success = False
 
     # Set up request arguments
     bg_args = {
@@ -72,24 +72,7 @@ def post_request( address, type, instance, property ):
 
     # Issue request to BACnet Gateway
     url = 'http://' + args.hostname + ':' + str( args.port )
-    bg_rsp = requests.post( url, data=bg_args )
-
-    # Convert JSON response to Python dictionary
-    dc_rsp = json.loads( bg_rsp.text )
-
-    # Extract BACnet response from the dictionary
-    bn_rsp = dc_rsp['bacnet_response']
-
-    # Extract result from BACnet response
-    if ( bn_rsp['success'] ):
-
-        data = bn_rsp['data']
-
-        if data['success']:
-            success = True
-
-    # Return status
-    return success
+    requests.post( url, data=bg_args )
 
 
 def log( msg ):
@@ -104,13 +87,12 @@ def log( msg ):
     # Optionally format new log filename
     global log_filename
     if not log_filename or not os.path.exists( log_filename ):
-        log_filename = '../../bgt_db/load_cache_' + time.strftime( '%Y-%m-%d_%H-%M-%S', t ) + '.log'
+        log_filename = '../../bg_db/update_cache_' + time.strftime( '%Y-%m-%d_%H-%M-%S', t ) + '.log'
 
     # Open, write, and close log file
     logfile = open( log_filename , 'a' )
     logfile.write( s + '\n' )
     logfile.close()
-
 
 
 if __name__ == '__main__':
