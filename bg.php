@@ -149,9 +149,6 @@
 
   function writeCache( $aData )
   {
-    error_log( '==> ===> WRITE CACHE: request=' . print_r( $_REQUEST, true ) );
-    error_log( '==> ===> WRITE CACHE: data=' . print_r( $aData, true ) );
-
     // Format command
     $command = SUDO . quote( getenv( "PYTHON" ) ) . ' cache/write_cache.py'
       . ' -a ' . $_REQUEST['address']
