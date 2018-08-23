@@ -7,6 +7,10 @@ import time
 import datetime
 import requests
 
+import sys
+sys.path.append( '../util' )
+import db_util
+
 idle_max = datetime.timedelta( days=7 )
 stale_max = datetime.timedelta( minutes=30 )
 
@@ -56,7 +60,7 @@ def update_cache():
             n_updated += 1
 
     if n_deleted or n_updated:
-        log( 'Deleted ' + str( n_deleted ) + ' and updated ' + str( n_updated ) + ' of ' + str( len( rows ) ) + ' entries.  Elapsed time: ' + str( datetime.timedelta( seconds=int( time.time() - start_time ) ) ) )
+        db_util.log( logpath, 'Deleted ' + str( n_deleted ) + ' and updated ' + str( n_updated ) + ' of ' + str( len( rows ) ) + ' entries.  Elapsed time: ' + str( datetime.timedelta( seconds=int( time.time() - start_time ) ) ) )
 
 
 def post_request( address, type, instance, property ):
@@ -73,26 +77,6 @@ def post_request( address, type, instance, property ):
     # Issue request to BACnet Gateway
     url = 'http://' + args.hostname + ':' + str( args.port )
     requests.post( url, data=bg_args )
-
-
-def log( msg ):
-
-    # Format output line
-    t = time.localtime()
-    s = '[' + time.strftime( '%Y-%m-%d %H:%M:%S', t ) + '] ' + msg
-
-    # Print to standard output
-    print( s )
-
-    # Optionally format new log filename
-    global log_filename
-    if not log_filename or not os.path.exists( log_filename ):
-        log_filename = '../../bg_db/update_cache_' + time.strftime( '%Y-%m-%d_%H-%M-%S', t ) + '.log'
-
-    # Open, write, and close log file
-    logfile = open( log_filename , 'a' )
-    logfile.write( s + '\n' )
-    logfile.close()
 
 
 if __name__ == '__main__':
@@ -121,6 +105,9 @@ if __name__ == '__main__':
             parser.add_argument( '-p', dest='port' )
             parser.add_argument( '-s', dest='sleep_interval', type=int )
             args = parser.parse_args()
+
+            logpath = '../../bg_db/update_cache_' + time.strftime( '%Y-%m-%d_%H-%M-%S', time.localtime() ) + '.log'
+            db_util.log( logpath, os.path.basename( __file__ ) + ' starting' )
 
             # Update cache continuously
             while True:

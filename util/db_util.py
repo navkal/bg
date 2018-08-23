@@ -1,6 +1,7 @@
 # Copyright 2018 BACnet Gateway.  All rights reserved.
 
 import sqlite3
+import time
 
 def save_field( table, field_name, field_value, cursor ):
 
@@ -29,3 +30,17 @@ def get_id( table, field_name, field_value, cursor ):
 
     # Return id
     return row_id
+
+
+def log( logpath, msg ):
+
+    # Format output line
+    s = '[' + time.strftime( '%Y-%m-%d %H:%M:%S', time.localtime() ) + '] ' + msg
+
+    # Print to standard output
+    print( s )
+
+    # Open, write, and close log file
+    logfile = open( logpath , 'a' )
+    logfile.write( s + '\n' )
+    logfile.close()
