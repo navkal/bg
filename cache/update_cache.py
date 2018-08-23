@@ -59,7 +59,8 @@ def update_cache():
 
             n_updated += 1
 
-    db_util.log( logpath, 'Deleted ' + str( n_deleted ) + ' and updated ' + str( n_updated ) + ' of ' + str( len( rows ) ) + ' entries.  Elapsed time: ' + str( datetime.timedelta( seconds=int( time.time() - start_time ) ) ) )
+    if n_deleted or n_updated:
+        db_util.log( logpath, 'Deleted ' + str( n_deleted ) + ' and updated ' + str( n_updated ) + ' of ' + str( len( rows ) ) + ' entries.  Elapsed time: ' + str( datetime.timedelta( seconds=int( time.time() - start_time ) ) ) )
 
 
 def post_request( address, type, instance, property ):
