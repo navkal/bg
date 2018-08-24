@@ -70,7 +70,7 @@ def make_application():
 
 def get_value_and_units( target_args, app ):
 
-    rq_prop = target_args['property']
+    property = target_args['property']
 
     if _standalone:
 
@@ -104,7 +104,7 @@ def get_value_and_units( target_args, app ):
         else:
             rsp_units = { 'units': ''}
 
-    rsp_value['requested_property'] = rq_prop
+    rsp_value['property'] = property
     rsp = { 'success': success, 'message': message, **rsp_value, **rsp_units }
 
     return rsp

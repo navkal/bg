@@ -48,7 +48,7 @@ if os.path.exists( db ):
         conn.commit()
 
         # Collect data
-        rsp_data = { 'address': args.address, 'type': args.type, 'instance': args.instance, 'requestedProperty': args.property }
+        rsp_data = { 'address': args.address, 'type': args.type, 'instance': args.instance, 'property': args.property }
         rsp_data[args.property] = row[1]
         rsp_data['units'] = row[2]
         rsp_data['timestamp'] = row[3] * 1000
