@@ -4,6 +4,8 @@ import time
 import os
 import argparse
 import csv
+import socket
+import struct
 import sqlite3
 import json
 
@@ -37,6 +39,9 @@ if os.path.exists( db ):
                         prefix = agent_row[0]
                     else:
                         print( '{0}: {1} = {2}'.format( n_agent, agent_row[0], prefix + agent_row[1] ) )
+                        addr_long = int( prefix + agent_row[1], 16 )
+                        ip = socket.inet_ntoa( struct.pack( '>L', addr_long ) )
+                        print( ip )
 
                     n_agent += 1
 
