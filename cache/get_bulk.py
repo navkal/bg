@@ -53,10 +53,7 @@ if os.path.exists( db ):
                             address = socket.inet_ntoa( struct.pack( '>L', int( prefix + agent_row[1].strip(), 16 ) ) )
                             fac_addr_map[facility] = address
 
-            print( fac_addr_map )
-
-
-            # Traverse bulk request
+            # Start building response
             for rq in bulk_rq:
 
                 # Validate instance
@@ -74,13 +71,17 @@ if os.path.exists( db ):
                     if 'property' not in rq:
                         rq['property'] = 'presentValue'
 
-                    print( rq )
                     rsp.append( rq )
 
+            # Finish building response
+            if len( rsp ):
 
-            # Connect to the database
-            conn = sqlite3.connect( db )
-            cur = conn.cursor()
+                # Connect to the database
+                conn = sqlite3.connect( db )
+                cur = conn.cursor()
+                for r in rsp:
+                    print( r )
+
 
 
 
