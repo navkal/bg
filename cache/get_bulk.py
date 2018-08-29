@@ -20,9 +20,10 @@ if os.path.exists( db ):
     args = parser.parse_args()
 
     if args.bulk_request:
-        bulk_request = args.bulk_request.replace( "'", '"' )
 
-        print( bulk_request )
+        bulk_request = json.loads( args.bulk_request.replace( "'", '"' ) )
+
+        print( json.dumps( bulk_request ) )
         exit()
 
 
