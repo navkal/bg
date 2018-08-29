@@ -58,11 +58,25 @@ if os.path.exists( db ):
 
             # Traverse bulk request
             for rq in bulk_rq:
-                if 'facility' in rq and rq['facility'] in fac_addr_map:
-                    rq['address'] = fac_addr_map[rq['facility']]
 
-                print( rq )
-                rsp.append( rq )
+                # Validate instance
+                if ( 'instance' in rq ) and str( rq['instance'] ).isdigit() and ( int( rq['instance'] ) > 0 ):
+
+                    # Map facility to address
+                    if 'facility' in rq and rq['facility'] in fac_addr_map:
+                        rq['address'] = fac_addr_map[rq['facility']]
+
+                    # Set default type
+                    if 'type' not in rq:
+                        rq['type'] = 'analogInput'
+
+                    # Set default property
+                    if 'property' not in rq:
+                        rq['property'] = 'presentValue'
+
+                    print( rq )
+                    rsp.append( rq )
+
 
             # Connect to the database
             conn = sqlite3.connect( db )
