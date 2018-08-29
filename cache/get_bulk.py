@@ -3,8 +3,8 @@
 import time
 import os
 import argparse
+import csv
 import sqlite3
-import collections
 import json
 
 start_time = time.time()
@@ -26,14 +26,29 @@ if os.path.exists( db ):
         # Extract request
         bulk_rq = json.loads( args.bulk_request.replace( "'", '"' ) )
 
-        # Traverse bulk request
-        for rq in bulk_rq:
-            print( rq )
-            rsp.append( rq )
+        if len( bulk_rq ):
 
-        # Connect to the database
-        conn = sqlite3.connect( db )
-        cur = conn.cursor()
+            # Build facility-to-address mapping
+            with open( 'agents.csv', newline='' ) as csvfile:
+                reader = csv.reader( csvfile )
+                n_agent = 0
+                for agent_row in reader:
+                    if n_agent == 0:
+                        prefix = agent_row[0]
+                    else:
+                        print( '{0}: {1} = {2}'.format( n_agent, agent_row[0], prefix + agent_row[1] ) )
+
+                    n_agent += 1
+
+
+            # Traverse bulk request
+            for rq in bulk_rq:
+                print( rq )
+                rsp.append( rq )
+
+            # Connect to the database
+            conn = sqlite3.connect( db )
+            cur = conn.cursor()
 
 
 
