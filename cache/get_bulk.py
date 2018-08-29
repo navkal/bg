@@ -27,7 +27,8 @@ if os.path.exists( db ):
         # Extract request
         bulk_rq = json.loads( args.bulk_request.replace( "'", '"' ) )
 
-        if len( bulk_rq ):
+        # If supplied request is a list with at least one element...
+        if isinstance( bulk_rq, list ) and len( bulk_rq ):
 
             # Build facility-to-address mapping
             fac_addr_map = {}
@@ -52,54 +53,54 @@ if os.path.exists( db ):
                             address = socket.inet_ntoa( struct.pack( '>L', int( prefix + agent_row[1].strip(), 16 ) ) )
                             fac_addr_map[facility] = address
 
-
             # Connect to the database
             conn = sqlite3.connect( db )
             cur = conn.cursor()
 
             # Build response
-            for rq in bulk_rq:
+            for item in bulk_rq:
 
                 # Validate instance
-                if ( 'instance' in rq ) and str( rq['instance'] ).isdigit() and ( int( rq['instance'] ) > 0 ):
+                if ( 'instance' in item ) and str( item['instance'] ).isdigit() and ( int( item['instance'] ) > 0 ):
 
                     # Map facility to address
-                    if 'facility' in rq and rq['facility'] in fac_addr_map:
-                        rq['address'] = fac_addr_map[rq['facility']]
+                    if 'facility' in item and item['facility'] in fac_addr_map:
+                        item['address'] = fac_addr_map[item['facility']]
 
                     # Set default type
-                    if 'type' not in rq:
-                        rq['type'] = 'analogInput'
+                    if 'type' not in item:
+                        item['type'] = 'analogInput'
 
                     # Set default property
-                    if 'property' not in rq:
-                        rq['property'] = 'presentValue'
+                    if 'property' not in item:
+                        item['property'] = 'presentValue'
 
-                    # Read cache
+                    # Retrieve value, units, and timestamp from cache
                     cur.execute( '''
                         SELECT
-                            Cache.value, Units.units, Cache.update_timestamp
+                            Cache.id, Cache.value, Units.units, Cache.update_timestamp
                         FROM Cache
                             LEFT JOIN Addresses ON Cache.address_id=Addresses.id
                             LEFT JOIN Types ON Cache.type_id=Types.id
                             LEFT JOIN Properties ON Cache.property_id=Properties.id
                             LEFT JOIN Units ON Cache.units_id = Units.id
                         WHERE ( Addresses.address=? AND Types.type=? AND Cache.instance=? AND Properties.property=? );
-                    ''', ( rq['address'], rq['type'], rq['instance'], rq['property'] )
+                    ''', ( item['address'], item['type'], item['instance'], item['property'] )
                     )
                     row = cur.fetchone()
+
                     if row:
-                        rq[rq['property']] = row[0]
-                        rq['units'] = row[1]
-                        rq['timestamp'] = row[2]
-                    print( rq )
+                        # Update access timestamp
+                        cur.execute( 'UPDATE Cache SET access_timestamp=? WHERE id=?', ( round( time.time() ), row[0] ) )
+                        conn.commit()
 
-                    bulk_rsp.append( rq )
+                        # Copy cache values into response
+                        item[item['property']] = row[1]
+                        item['units'] = row[2]
+                        item['timestamp'] = row[3]
 
-
-
-
-
+                        # Append result to response
+                        bulk_rsp.append( item )
 
 # Return result
 print( json.dumps( bulk_rsp ) )
