@@ -11,8 +11,7 @@ import json
 
 start_time = time.time()
 
-msg = None
-rsp = []
+bulk_rsp = []
 
 db = '../bg_db/cache.sqlite'
 
@@ -53,7 +52,12 @@ if os.path.exists( db ):
                             address = socket.inet_ntoa( struct.pack( '>L', int( prefix + agent_row[1].strip(), 16 ) ) )
                             fac_addr_map[facility] = address
 
-            # Start building response
+
+            # Connect to the database
+            conn = sqlite3.connect( db )
+            cur = conn.cursor()
+
+            # Build response
             for rq in bulk_rq:
 
                 # Validate instance
@@ -71,24 +75,31 @@ if os.path.exists( db ):
                     if 'property' not in rq:
                         rq['property'] = 'presentValue'
 
-                    rsp.append( rq )
+                    # Read cache
+                    cur.execute( '''
+                        SELECT
+                            Cache.value, Units.units, Cache.update_timestamp
+                        FROM Cache
+                            LEFT JOIN Addresses ON Cache.address_id=Addresses.id
+                            LEFT JOIN Types ON Cache.type_id=Types.id
+                            LEFT JOIN Properties ON Cache.property_id=Properties.id
+                            LEFT JOIN Units ON Cache.units_id = Units.id
+                        WHERE ( Addresses.address=? AND Types.type=? AND Cache.instance=? AND Properties.property=? );
+                    ''', ( rq['address'], rq['type'], rq['instance'], rq['property'] )
+                    )
+                    row = cur.fetchone()
+                    if row:
+                        rq[rq['property']] = row[0]
+                        rq['units'] = row[1]
+                        rq['timestamp'] = row[2]
+                    print( rq )
 
-            # Finish building response
-            if len( rsp ):
-
-                # Connect to the database
-                conn = sqlite3.connect( db )
-                cur = conn.cursor()
-                for r in rsp:
-                    print( r )
+                    bulk_rsp.append( rq )
 
 
 
 
-if msg:
-    bulk_rsp = { 'success': False, 'message': msg }
-else:
-    bulk_rsp = rsp
+
 
 # Return result
 print( json.dumps( bulk_rsp ) )
