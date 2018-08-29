@@ -8,7 +8,9 @@ import collections
 import json
 
 start_time = time.time()
+
 msg = None
+rsp = []
 
 db = '../bg_db/cache.sqlite'
 
@@ -21,73 +23,24 @@ if os.path.exists( db ):
 
     if args.bulk_request:
 
-        bulk_request = json.loads( args.bulk_request.replace( "'", '"' ) )
+        # Extract request
+        bulk_rq = json.loads( args.bulk_request.replace( "'", '"' ) )
 
-        print( json.dumps( bulk_request ) )
-        exit()
+        # Traverse bulk request
+        for rq in bulk_rq:
+            print( rq )
+            rsp.append( rq )
 
+        # Connect to the database
+        conn = sqlite3.connect( db )
+        cur = conn.cursor()
 
-
-
-
-
-
-    # Connect to the database
-    conn = sqlite3.connect( db )
-    cur = conn.cursor()
-
-    # Read cache
-    cur.execute( '''
-        SELECT
-            Cache.id, Cache.value, Units.units, Cache.update_timestamp
-        FROM Cache
-            LEFT JOIN Addresses ON Cache.address_id=Addresses.id
-            LEFT JOIN Types ON Cache.type_id=Types.id
-            LEFT JOIN Properties ON Cache.property_id=Properties.id
-            LEFT JOIN Units ON Cache.units_id = Units.id
-        WHERE ( Addresses.address=? AND Types.type=? AND Cache.instance=? AND Properties.property=? );
-    ''', ( args.address, args.type, args.instance, args.property )
-    )
-    row = cur.fetchone()
-
-    if row:
-        # Update access timestamp
-        cur.execute( 'UPDATE Cache SET access_timestamp=? WHERE id=?', ( round( time.time() ), row[0] ) )
-        conn.commit()
-
-        # Collect data
-        rsp_data = { 'address': args.address, 'type': args.type, 'instance': args.instance, 'property': args.property }
-        rsp_data[args.property] = row[1]
-        rsp_data['units'] = row[2]
-        rsp_data['timestamp'] = row[3] * 1000
-        rsp_data['success'] = True
-        rsp_data['message'] = ''
-
-        # Collect debug info
-        rsp_debug = {}
-        rsp_debug['response_time'] = str( round( ( time.time() - start_time ) * 1000 ) ) + ' ms'
-        rsp_debug['slept'] = [False, False, False]
-        rsp_debug['timed_out'] = False
-
-        # Build the response
-        rsp = {}
-        rsp['data'] = collections.OrderedDict( sorted( rsp_data.items() ) )
-        rsp['debug'] = collections.OrderedDict( sorted( rsp_debug.items() ) )
-        rsp['success'] = True
-        rsp['message'] = ''
-        rsp = collections.OrderedDict( sorted( rsp.items() ) )
-
-    else:
-        msg = 'No data'
-
-else:
-    msg = 'No cache'
 
 
 if msg:
-    cache_rsp = { 'success': False, 'message': msg }
+    bulk_rsp = { 'success': False, 'message': msg }
 else:
-    cache_rsp = rsp
+    bulk_rsp = rsp
 
 # Return result
-print( json.dumps( cache_rsp ) )
+print( json.dumps( bulk_rsp ) )
