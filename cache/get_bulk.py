@@ -31,23 +31,36 @@ if os.path.exists( db ):
         if len( bulk_rq ):
 
             # Build facility-to-address mapping
+            fac_addr_map = {}
+
             with open( 'agents.csv', newline='' ) as csvfile:
                 reader = csv.reader( csvfile )
-                n_agent = 0
-                for agent_row in reader:
-                    if n_agent == 0:
-                        prefix = agent_row[0]
-                    else:
-                        print( '{0}: {1} = {2}'.format( n_agent, agent_row[0], prefix + agent_row[1] ) )
-                        addr_long = int( prefix + agent_row[1], 16 )
-                        ip = socket.inet_ntoa( struct.pack( '>L', addr_long ) )
-                        print( ip )
 
-                    n_agent += 1
+                first = True
+
+                for agent_row in reader:
+
+                    # Skip empty and comment lines
+                    if ( len( agent_row ) > 0 ) and not agent_row[0].startswith( '#' ):
+
+                        if first:
+                            # Get prefix from first line
+                            prefix = agent_row[0].strip()
+                            first = False
+                        else:
+                            # Add map entry
+                            facility = agent_row[0].strip()
+                            address = socket.inet_ntoa( struct.pack( '>L', int( prefix + agent_row[1].strip(), 16 ) ) )
+                            fac_addr_map[facility] = address
+
+            print( fac_addr_map )
 
 
             # Traverse bulk request
             for rq in bulk_rq:
+                if 'facility' in rq and rq['facility'] in fac_addr_map:
+                    rq['address'] = fac_addr_map[rq['facility']]
+
                 print( rq )
                 rsp.append( rq )
 
