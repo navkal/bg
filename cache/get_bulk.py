@@ -58,32 +58,32 @@ if os.path.exists( db ):
             # Build response
             for item in bulk_rq:
 
-                # Validate instance
-                if ( 'instance' in item ) and str( item['instance'] ).isdigit() and ( int( item['instance'] ) > 0 ):
+                # Map facility to address
+                if 'facility' in item and item['facility'] in fac_addr_map:
+                    item['address'] = fac_addr_map[item['facility']]
 
-                    # Map facility to address
-                    if 'facility' in item and item['facility'] in fac_addr_map:
-                        item['address'] = fac_addr_map[item['facility']]
+                # Set default type
+                if 'type' not in item:
+                    item['type'] = 'analogInput'
 
-                    # Set default type
-                    if 'type' not in item:
-                        item['type'] = 'analogInput'
+                # Set default property
+                if 'property' not in item:
+                    item['property'] = 'presentValue'
 
-                    # Set default property
-                    if 'property' not in item:
-                        item['property'] = 'presentValue'
+                # If all arguments are present...
+                if ( 'address' in item ) and ( 'type' in item ) and ( 'instance' in item ) and ( 'property' in item ):
 
                     # Retrieve value, units, and timestamp from cache
                     row = cache_db.get_cache_value( item['address'], item['type'], item['instance'], item['property'], cur, conn )
 
                     if row:
 
-                        # Copy cache values into response
+                        # Copy cache values into item
                         item[item['property']] = row[1]
                         item['units'] = row[2]
                         item['timestamp'] = row[3]
 
-                        # Append result to response
+                        # Append item to response
                         bulk_rsp.append( item )
 
 # Return result
