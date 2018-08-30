@@ -1,15 +1,13 @@
 # Copyright 2018 BACnet Gateway.  All rights reserved.
 
-import time
 import os
 import argparse
+import json
 import csv
 import socket
 import struct
 import sqlite3
-import json
-
-start_time = time.time()
+import cache_db
 
 bulk_rsp = []
 
@@ -76,23 +74,9 @@ if os.path.exists( db ):
                         item['property'] = 'presentValue'
 
                     # Retrieve value, units, and timestamp from cache
-                    cur.execute( '''
-                        SELECT
-                            Cache.id, Cache.value, Units.units, Cache.update_timestamp
-                        FROM Cache
-                            LEFT JOIN Addresses ON Cache.address_id=Addresses.id
-                            LEFT JOIN Types ON Cache.type_id=Types.id
-                            LEFT JOIN Properties ON Cache.property_id=Properties.id
-                            LEFT JOIN Units ON Cache.units_id = Units.id
-                        WHERE ( Addresses.address=? AND Types.type=? AND Cache.instance=? AND Properties.property=? );
-                    ''', ( item['address'], item['type'], item['instance'], item['property'] )
-                    )
-                    row = cur.fetchone()
+                    row = cache_db.get_cache_value( item['address'], item['type'], item['instance'], item['property'], cur, conn )
 
                     if row:
-                        # Update access timestamp
-                        cur.execute( 'UPDATE Cache SET access_timestamp=? WHERE id=?', ( round( time.time() ), row[0] ) )
-                        conn.commit()
 
                         # Copy cache values into response
                         item[item['property']] = row[1]

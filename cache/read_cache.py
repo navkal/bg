@@ -6,6 +6,7 @@ import argparse
 import sqlite3
 import collections
 import json
+import cache_db
 
 
 start_time = time.time()
@@ -28,24 +29,10 @@ if os.path.exists( db ):
     conn = sqlite3.connect( db )
     cur = conn.cursor()
 
-    # Read cache
-    cur.execute( '''
-        SELECT
-            Cache.id, Cache.value, Units.units, Cache.update_timestamp
-        FROM Cache
-            LEFT JOIN Addresses ON Cache.address_id=Addresses.id
-            LEFT JOIN Types ON Cache.type_id=Types.id
-            LEFT JOIN Properties ON Cache.property_id=Properties.id
-            LEFT JOIN Units ON Cache.units_id = Units.id
-        WHERE ( Addresses.address=? AND Types.type=? AND Cache.instance=? AND Properties.property=? );
-    ''', ( args.address, args.type, args.instance, args.property )
-    )
-    row = cur.fetchone()
+    # Retrieve value, units, and timestamp from cache
+    row = cache_db.get_cache_value( args.address, args.type, args.instance, args.property, cur, conn )
 
     if row:
-        # Update access timestamp
-        cur.execute( 'UPDATE Cache SET access_timestamp=? WHERE id=?', ( round( time.time() ), row[0] ) )
-        conn.commit()
 
         # Collect data
         rsp_data = { 'address': args.address, 'type': args.type, 'instance': args.instance, 'property': args.property }
