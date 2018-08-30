@@ -58,14 +58,14 @@ def make_rsp( rq ):
     if ( 'address' in rq ) and ( 'type' in rq ) and ( 'instance' in rq ) and ( 'property' in rq ):
 
         # Retrieve value, units, and timestamp from cache
-        row = cache_db.get_cache_value( rq['address'], rq['type'], rq['instance'], rq['property'], cur, conn )
+        cache_value = cache_db.get_cache_value( rq['address'], rq['type'], rq['instance'], rq['property'], cur, conn )
 
-        if row:
+        if cache_value:
 
             # Copy cache values
-            rq[rq['property']] = row[1]
-            rq['units'] = row[2]
-            rq['timestamp'] = row[3]
+            rq[rq['property']] = cache_value['value']
+            rq['units'] = cache_value['units']
+            rq['timestamp'] = cache_value['timestamp']
 
             # Create response
             rsp = collections.OrderedDict( sorted( rq.items() ) )

@@ -30,15 +30,15 @@ if os.path.exists( db ):
     cur = conn.cursor()
 
     # Retrieve value, units, and timestamp from cache
-    row = cache_db.get_cache_value( args.address, args.type, args.instance, args.property, cur, conn )
+    cache_value = cache_db.get_cache_value( args.address, args.type, args.instance, args.property, cur, conn )
 
-    if row:
+    if cache_value:
 
         # Collect data
         rsp_data = { 'address': args.address, 'type': args.type, 'instance': args.instance, 'property': args.property }
-        rsp_data[args.property] = row[1]
-        rsp_data['units'] = row[2]
-        rsp_data['timestamp'] = row[3] * 1000
+        rsp_data[args.property] = cache_value['value']
+        rsp_data['units'] = cache_value['units']
+        rsp_data['timestamp'] = cache_value['timestamp']
         rsp_data['success'] = True
         rsp_data['message'] = ''
 

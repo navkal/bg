@@ -4,6 +4,8 @@ import time
 
 def get_cache_value( address, type, instance, property, cur, conn ):
 
+    cache_value = None
+
     # Retrieve value, units, and timestamp from cache
     cur.execute( '''
         SELECT
@@ -16,11 +18,13 @@ def get_cache_value( address, type, instance, property, cur, conn ):
         WHERE ( Addresses.address=? AND Types.type=? AND Cache.instance=? AND Properties.property=? );
     ''', ( address, type, instance, property )
     )
+
     row = cur.fetchone()
 
     if row:
         # Update access timestamp
         cur.execute( 'UPDATE Cache SET access_timestamp=? WHERE id=?', ( int( time.time() ), row[0] ) )
         conn.commit()
+        cache_value = { 'value': row[1], 'units': row[2], 'timestamp': row[3] * 1000 }
 
-    return row
+    return cache_value
