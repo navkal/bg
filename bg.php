@@ -154,8 +154,8 @@
       . ' -t ' . $_REQUEST['type']
       . ' -i ' . $_REQUEST['instance']
       . ' -p ' . $_REQUEST['property']
-      . ' -v ' . $aData[$_REQUEST['property']]
-      . ' -u ' . $aData['units'];
+      . ' -v ' . quote( $aData[$_REQUEST['property']] )
+      . ' -u ' . quote( $aData['units'] );
 
     // Execute command
     error_log( "===> command=" . $command );
