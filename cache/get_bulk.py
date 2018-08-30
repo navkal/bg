@@ -8,6 +8,7 @@ import socket
 import struct
 import sqlite3
 import cache_db
+import collections
 
 
 def make_fac_addr_map():
@@ -39,6 +40,8 @@ def make_fac_addr_map():
 
 def make_rsp( item ):
 
+    rsp = None
+
     # Map facility to address
     if 'facility' in item and item['facility'] in fac_addr_map:
         item['address'] = fac_addr_map[item['facility']]
@@ -64,7 +67,10 @@ def make_rsp( item ):
             item['units'] = row[2]
             item['timestamp'] = row[3]
 
-    return item
+            # Create response
+            rsp = collections.OrderedDict( sorted( item.items() ) )
+
+    return rsp
 
 
 if __name__ == '__main__':
@@ -97,7 +103,9 @@ if __name__ == '__main__':
 
                 # Build response
                 for item in bulk_rq:
-                    bulk_rsp.append( make_rsp( item ) )
+                    rsp = make_rsp( item )
+                    if rsp:
+                        bulk_rsp.append( rsp )
 
     # Return result
     print( json.dumps( bulk_rsp ) )
