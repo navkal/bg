@@ -37,63 +37,67 @@ def make_fac_addr_map():
     return fac_addr_map
 
 
+def make_rsp( item, fac_addr_map ):
 
-bulk_rsp = []
+    # Map facility to address
+    if 'facility' in item and item['facility'] in fac_addr_map:
+        item['address'] = fac_addr_map[item['facility']]
 
-db = '../bg_db/cache.sqlite'
+    # Set default type
+    if 'type' not in item:
+        item['type'] = 'analogInput'
 
-if os.path.exists( db ):
+    # Set default property
+    if 'property' not in item:
+        item['property'] = 'presentValue'
 
-    # Get arguments
-    parser = argparse.ArgumentParser( description='Get multiple BACnet values from cache' )
-    parser.add_argument( '-b', dest='bulk_request' )
-    args = parser.parse_args()
+    # If all arguments are present...
+    if ( 'address' in item ) and ( 'type' in item ) and ( 'instance' in item ) and ( 'property' in item ):
 
-    if args.bulk_request:
+        # Retrieve value, units, and timestamp from cache
+        row = cache_db.get_cache_value( item['address'], item['type'], item['instance'], item['property'], cur, conn )
 
-        # Extract request
-        bulk_rq = json.loads( args.bulk_request.replace( "'", '"' ) )
+        if row:
 
-        # If supplied request is a list with at least one element...
-        if isinstance( bulk_rq, list ) and len( bulk_rq ):
+            # Copy cache values into item
+            item[item['property']] = row[1]
+            item['units'] = row[2]
+            item['timestamp'] = row[3]
 
-            # Build facility-to-address map
-            fac_addr_map = make_fac_addr_map()
+    return item
 
-            # Connect to the database
-            conn = sqlite3.connect( db )
-            cur = conn.cursor()
 
-            # Build response
-            for item in bulk_rq:
+if __name__ == '__main__':
 
-                # Map facility to address
-                if 'facility' in item and item['facility'] in fac_addr_map:
-                    item['address'] = fac_addr_map[item['facility']]
+    bulk_rsp = []
 
-                # Set default type
-                if 'type' not in item:
-                    item['type'] = 'analogInput'
+    db = '../bg_db/cache.sqlite'
 
-                # Set default property
-                if 'property' not in item:
-                    item['property'] = 'presentValue'
+    if os.path.exists( db ):
 
-                # If all arguments are present...
-                if ( 'address' in item ) and ( 'type' in item ) and ( 'instance' in item ) and ( 'property' in item ):
+        # Get arguments
+        parser = argparse.ArgumentParser( description='Get multiple BACnet values from cache' )
+        parser.add_argument( '-b', dest='bulk_request' )
+        args = parser.parse_args()
 
-                    # Retrieve value, units, and timestamp from cache
-                    row = cache_db.get_cache_value( item['address'], item['type'], item['instance'], item['property'], cur, conn )
+        if args.bulk_request:
 
-                    if row:
+            # Extract request
+            bulk_rq = json.loads( args.bulk_request.replace( "'", '"' ) )
 
-                        # Copy cache values into item
-                        item[item['property']] = row[1]
-                        item['units'] = row[2]
-                        item['timestamp'] = row[3]
+            # If supplied request is a list with at least one element...
+            if isinstance( bulk_rq, list ) and len( bulk_rq ):
 
-                        # Append item to response
-                        bulk_rsp.append( item )
+                # Build facility-to-address map
+                fac_addr_map = make_fac_addr_map()
 
-# Return result
-print( json.dumps( bulk_rsp ) )
+                # Connect to the database
+                conn = sqlite3.connect( db )
+                cur = conn.cursor()
+
+                # Build response
+                for item in bulk_rq:
+                    bulk_rsp.append( make_rsp( item, fac_addr_map ) )
+
+    # Return result
+    print( json.dumps( bulk_rsp ) )
