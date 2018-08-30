@@ -38,37 +38,37 @@ def make_fac_addr_map():
     return fac_addr_map
 
 
-def make_rsp( item ):
+def make_rsp( rq ):
 
     rsp = None
 
     # Map facility to address
-    if 'facility' in item and item['facility'] in fac_addr_map:
-        item['address'] = fac_addr_map[item['facility']]
+    if 'facility' in rq and rq['facility'] in fac_addr_map:
+        rq['address'] = fac_addr_map[rq['facility']]
 
     # Set default type
-    if 'type' not in item:
-        item['type'] = 'analogInput'
+    if 'type' not in rq:
+        rq['type'] = 'analogInput'
 
     # Set default property
-    if 'property' not in item:
-        item['property'] = 'presentValue'
+    if 'property' not in rq:
+        rq['property'] = 'presentValue'
 
     # If all arguments are present...
-    if ( 'address' in item ) and ( 'type' in item ) and ( 'instance' in item ) and ( 'property' in item ):
+    if ( 'address' in rq ) and ( 'type' in rq ) and ( 'instance' in rq ) and ( 'property' in rq ):
 
         # Retrieve value, units, and timestamp from cache
-        row = cache_db.get_cache_value( item['address'], item['type'], item['instance'], item['property'], cur, conn )
+        row = cache_db.get_cache_value( rq['address'], rq['type'], rq['instance'], rq['property'], cur, conn )
 
         if row:
 
-            # Copy cache values into item
-            item[item['property']] = row[1]
-            item['units'] = row[2]
-            item['timestamp'] = row[3]
+            # Copy cache values
+            rq[rq['property']] = row[1]
+            rq['units'] = row[2]
+            rq['timestamp'] = row[3]
 
             # Create response
-            rsp = collections.OrderedDict( sorted( item.items() ) )
+            rsp = collections.OrderedDict( sorted( rq.items() ) )
 
     return rsp
 
@@ -102,8 +102,8 @@ if __name__ == '__main__':
                 cur = conn.cursor()
 
                 # Build response
-                for item in bulk_rq:
-                    rsp = make_rsp( item )
+                for rq in bulk_rq:
+                    rsp = make_rsp( rq )
                     if rsp:
                         bulk_rsp.append( rsp )
 
