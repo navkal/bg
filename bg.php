@@ -77,9 +77,9 @@
         . ' -p ' . $_REQUEST['property'];
 
       // Execute command
-      error_log( "===> command=" . $command );
+      error_log( "==> command=" . $command );
       exec( $command, $output, $status );
-      error_log( "===> output=" . print_r( $output, true ) );
+      error_log( "==> output=" . print_r( $output, true ) );
 
       // Determine whether to retry with live request
       $tCacheRsp = json_decode( $output[ count( $output ) - 1 ] );
@@ -98,9 +98,9 @@
         . ' -p ' . $_REQUEST['property'];
 
       // Execute command
-      error_log( "===> command=" . $command );
+      error_log( "==> command=" . $command );
       exec( $command, $output, $status );
-      error_log( "===> output=" . print_r( $output, true ) );
+      error_log( "==> output=" . print_r( $output, true ) );
 
       $tLiveRsp = json_decode( $output[ count( $output ) - 1 ] );
       if ( $tLiveRsp->success && $tLiveRsp->data->success )
@@ -158,8 +158,8 @@
       . ' -u ' . quote( $aData['units'] );
 
     // Execute command
-    error_log( "===> command=" . $command );
+    error_log( "==> command=" . $command );
     exec( $command, $output, $status );
-    error_log( "===> output=" . print_r( $output, true ) );
+    error_log( "==> output=" . print_r( $output, true ) );
   }
 ?>

@@ -7,9 +7,9 @@
   $command = SUDO . quote( getenv( "PYTHON" ) ) . ' cache/get_bulk.py -b ' . quote( str_replace( '"', "'", $_REQUEST['bulk'] ) );
 
   // Execute command
-  error_log( "===> command=" . $command );
+  error_log( "==> command=" . $command );
   exec( $command, $output, $status );
-  error_log( "===> output=" . print_r( $output, true ) );
+  error_log( "==> output=" . print_r( $output, true ) );
 
   // Echo result
   echo $output[ count( $output ) - 1 ];
