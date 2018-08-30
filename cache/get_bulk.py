@@ -9,6 +9,35 @@ import struct
 import sqlite3
 import cache_db
 
+
+def make_fac_addr_map():
+
+    fac_addr_map = {}
+
+    with open( 'agents.csv', newline='' ) as csvfile:
+        reader = csv.reader( csvfile )
+
+        first = True
+
+        for agent_row in reader:
+
+            # Skip empty and comment lines
+            if ( len( agent_row ) > 0 ) and not agent_row[0].startswith( '#' ):
+
+                if first:
+                    # Get prefix from first line
+                    prefix = agent_row[0].strip()
+                    first = False
+                else:
+                    # Add map entry
+                    facility = agent_row[0].strip()
+                    address = socket.inet_ntoa( struct.pack( '>L', int( prefix + agent_row[1].strip(), 16 ) ) )
+                    fac_addr_map[facility] = address
+
+    return fac_addr_map
+
+
+
 bulk_rsp = []
 
 db = '../bg_db/cache.sqlite'
@@ -28,28 +57,8 @@ if os.path.exists( db ):
         # If supplied request is a list with at least one element...
         if isinstance( bulk_rq, list ) and len( bulk_rq ):
 
-            # Build facility-to-address mapping
-            fac_addr_map = {}
-
-            with open( 'agents.csv', newline='' ) as csvfile:
-                reader = csv.reader( csvfile )
-
-                first = True
-
-                for agent_row in reader:
-
-                    # Skip empty and comment lines
-                    if ( len( agent_row ) > 0 ) and not agent_row[0].startswith( '#' ):
-
-                        if first:
-                            # Get prefix from first line
-                            prefix = agent_row[0].strip()
-                            first = False
-                        else:
-                            # Add map entry
-                            facility = agent_row[0].strip()
-                            address = socket.inet_ntoa( struct.pack( '>L', int( prefix + agent_row[1].strip(), 16 ) ) )
-                            fac_addr_map[facility] = address
+            # Build facility-to-address map
+            fac_addr_map = make_fac_addr_map()
 
             # Connect to the database
             conn = sqlite3.connect( db )
