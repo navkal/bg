@@ -37,7 +37,7 @@ def make_fac_addr_map():
     return fac_addr_map
 
 
-def make_rsp( item, fac_addr_map ):
+def make_rsp( item ):
 
     # Map facility to address
     if 'facility' in item and item['facility'] in fac_addr_map:
@@ -97,7 +97,7 @@ if __name__ == '__main__':
 
                 # Build response
                 for item in bulk_rq:
-                    bulk_rsp.append( make_rsp( item, fac_addr_map ) )
+                    bulk_rsp.append( make_rsp( item ) )
 
     # Return result
     print( json.dumps( bulk_rsp ) )
