@@ -66,6 +66,10 @@ def make_rsp( rq ):
             rq[rq['property']] = cache_value['value']
             rq['units'] = cache_value['units']
             rq['timestamp'] = cache_value['timestamp']
+            
+            # Remove mapped address
+            if 'facility' in rq and rq['facility'] in fac_addr_map:
+                del rq['address']
 
             # Create response
             rsp = collections.OrderedDict( sorted( rq.items() ) )
