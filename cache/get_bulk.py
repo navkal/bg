@@ -125,7 +125,7 @@ if __name__ == '__main__':
     # Build response map
     rsp_map = {}
     for rsp in rsp_list:
-        if ( 'facility' in rsp ) and ( 'instance' in rsp ):
+        if rsp['success'] and ( 'facility' in rsp ):
             facility = rsp['facility']
             if facility not in rsp_map:
                 rsp_map[facility] = {}
