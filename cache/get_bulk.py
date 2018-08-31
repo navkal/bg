@@ -1,5 +1,6 @@
 # Copyright 2018 BACnet Gateway.  All rights reserved.
 
+import time
 import os
 import argparse
 import json
@@ -40,7 +41,7 @@ def make_fac_addr_map():
 
 def make_rsp( rq ):
 
-    rsp = None
+    msg = ''
 
     # Map facility to address
     if 'facility' in rq and rq['facility'] in fac_addr_map:
@@ -61,25 +62,33 @@ def make_rsp( rq ):
         cache_value = cache_db.get_cache_value( rq['address'], rq['type'], rq['instance'], rq['property'], cur, conn )
 
         if cache_value:
-
-            # Copy cache values
             rq[rq['property']] = cache_value['value']
             rq['units'] = cache_value['units']
             rq['timestamp'] = cache_value['timestamp']
-            
-            # Remove mapped address
-            if 'facility' in rq and rq['facility'] in fac_addr_map:
-                del rq['address']
+        else:
+            msg = 'No data'
 
-            # Create response
-            rsp = collections.OrderedDict( sorted( rq.items() ) )
+    else:
+        msg = 'Missing arguments'
+
+    # Remove mapped address
+    if 'facility' in rq and rq['facility'] in fac_addr_map:
+        del rq['address']
+
+    # Create response
+    rq['message'] = msg
+    rq['success'] = ( msg == '' )
+    rsp = collections.OrderedDict( sorted( rq.items() ) )
 
     return rsp
 
 
 if __name__ == '__main__':
 
-    bulk_rsp = []
+    start_time = time.time()
+    rq_count = 0
+    rsp_count = 0
+    rsp_list = []
 
     db = '../bg_db/cache.sqlite'
 
@@ -94,6 +103,7 @@ if __name__ == '__main__':
 
             # Extract request
             bulk_rq = json.loads( args.bulk_request.replace( "'", '"' ) )
+            rq_count = len( bulk_rq )
 
             # If supplied request is a list with at least one element...
             if isinstance( bulk_rq, list ) and len( bulk_rq ):
@@ -108,8 +118,28 @@ if __name__ == '__main__':
                 # Build response
                 for rq in bulk_rq:
                     rsp = make_rsp( rq )
-                    if rsp:
-                        bulk_rsp.append( rsp )
+                    if rsp['success']:
+                        rsp_count += 1
+                    rsp_list.append( rsp )
+
+    # Build response map
+    rsp_map = {}
+    for rsp in rsp_list:
+        if ( 'facility' in rsp ) and ( 'instance' in rsp ):
+            facility = rsp['facility']
+            if facility not in rsp_map:
+                rsp_map[facility] = {}
+            rsp_map[facility][rsp['instance']] = rsp
+
+    # Build bulk response
+    bulk_rsp = {
+        'rq_count': rq_count,
+        'rsp_count': rsp_count,
+        'rsp_list': rsp_list,
+        'rsp_map': rsp_map,
+        'elapsed_sec': round( ( time.time() - start_time ) * 1000 ) / 1000
+    }
+    bulk_rsp = collections.OrderedDict( sorted( bulk_rsp.items() ) )
 
     # Return result
     print( json.dumps( bulk_rsp ) )
