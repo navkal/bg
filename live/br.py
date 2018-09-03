@@ -28,13 +28,13 @@ def read_property( target_args ):
 
     app = make_application()
 
-    for i in range( 0, 10 ):
+    for i in range( 0, 2 ):
         rsp = get_value_and_units( target_args, app )
         if rsp['success']:
             break
         else:
             import time
-            time.sleep( 0.1 )
+            time.sleep( 0.5 )
 
     return rsp
 
