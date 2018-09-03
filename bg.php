@@ -12,22 +12,19 @@
     // Open CSV file containing mappings from facility names to IP addresses
     $file = fopen( 'agents.csv', 'r' );
 
-    // Read the prefix
-    $aLine = fgetcsv( $file );
-    $sPrefix = $aLine[0];
-
     // Traverse lines of the file until match is found
     $bFound = false;
     while( ! $bFound && ! feof( $file ) )
     {
-      // Get next line
+      // Get next facility name
       $aLine = fgetcsv( $file );
+      $sFacility = trim( $aLine[0] );
 
       // If there is a match, set parameter
-      if ( $aLine[0] == $_REQUEST['facility'] )
+      if ( $sFacility && ( substr( $sFacility, 0, 1 ) != '#' ) && ( $sFacility == $_REQUEST['facility'] ) )
       {
         $bFound = true;
-        $_REQUEST['address'] = long2ip( hexdec( $sPrefix . $aLine[1] ) );
+        $_REQUEST['address'] = long2ip( hexdec( $aLine[1] ) );
       }
     }
 
