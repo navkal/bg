@@ -198,6 +198,6 @@ if __name__ == '__main__':
         'property': args.property
     }
 
-    rsp = read_property( target_args )
+    read_rsp = read_property( target_args )
 
-    print( rsp )
+    print( read_rsp )
