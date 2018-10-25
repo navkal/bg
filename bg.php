@@ -132,7 +132,7 @@
   {
     if ( ! isset( $sMessage ) )
     {
-      $sMessage = 'BACnet Gateway request arguments missing';
+      $sMessage = '?';
     }
 
     $sEcho = json_encode( $sMessage );
