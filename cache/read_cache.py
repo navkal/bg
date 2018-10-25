@@ -35,7 +35,8 @@ if os.path.exists( db ):
     if cache_value:
 
         # Collect data
-        rsp_data = { 'address': args.address, 'type': args.type, 'instance': args.instance, 'property': args.property }
+        # rsp_data = { 'address': args.address, 'type': args.type, 'instance': args.instance, 'property': args.property }
+        rsp_data = { 'type': args.type, 'instance': args.instance, 'property': args.property } # Omit address for security purposes
         rsp_data[args.property] = cache_value['value']
         rsp_data['units'] = cache_value['units']
         rsp_data['timestamp'] = cache_value['timestamp']
