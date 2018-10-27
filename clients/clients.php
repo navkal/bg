@@ -5,7 +5,7 @@
   $sFwdIp = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : '';
 
   // Format command
-  $command = quote( getenv( 'PYTHON' ) ) . ' clients/clients.py 2>&1 -i ' . quote( $sIp ) . ' -f ' . quote( $sFwdIp );
+  $command = SUDO . quote( getenv( 'PYTHON' ) ) . ' clients/clients.py 2>&1 -i ' . quote( $sIp ) . ' -f ' . quote( $sFwdIp );
 
   // Execute command
   error_log( '==> command=' . $command );
