@@ -1,15 +1,6 @@
 <?php
   // Copyright 2018 BACnet Gateway.  All rights reserved.
 
-  //////// fake /////////
-  //error_log( '=========================>' . print_r( $_SERVER, true ) );
-  foreach ( $_SERVER as $k => $v )
-  {
-    error_log( "--> [$k]=$v" );
-  }
-  exit();
-  //////// fake /////////
-
   $sIp = $_SERVER['REMOTE_ADDR'];
   $sFwdIp = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : '';
 
