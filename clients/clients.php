@@ -5,11 +5,7 @@
   [
     'REMOTE_ADDR',
     'HTTP_X_FORWARDED_FOR',
-    'REMOTE_PORT',
     'HTTP_REFERER',
-    'REQUEST_METHOD',
-    'QUERY_STRING',
-    'REQUEST_URI',
     'REQUEST_TIME'
   ];
 
