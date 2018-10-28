@@ -35,9 +35,9 @@ def open_db():
                 HTTP_REFERER TEXT,
                 REQUEST_TIME_1 INTEGER,
                 REQUEST_TIME_n INTEGER,
-                rq_count INTEGER,
                 rq_time_1 TEXT,
-                rq_time_n TEXT
+                rq_time_n TEXT,
+                rq_count INTEGER
             );
         ''')
 
@@ -62,7 +62,7 @@ def track_client():
     if row:
 
         # Entry exists; update it
-        cur.execute( 'UPDATE Clients SET rq_count=rq_count+1, rq_time_n=?, REQUEST_TIME_n=? WHERE id=?', ( rq_time, args.REQUEST_TIME, row[0] ) )
+        cur.execute( 'UPDATE Clients SET REQUEST_TIME_n=?, rq_time_n=?, rq_count=rq_count+1 WHERE id=?', ( args.REQUEST_TIME, rq_time, row[0] ) )
 
     else:
 
@@ -75,9 +75,9 @@ def track_client():
                 HTTP_REFERER,
                 REQUEST_TIME_1,
                 REQUEST_TIME_n,
-                rq_count,
                 rq_time_1,
-                rq_time_n
+                rq_time_n,
+                rq_count
             )
             VALUES (?,?,?,?,?,?,?,?)
 
@@ -87,9 +87,9 @@ def track_client():
                 args.HTTP_REFERER,
                 args.REQUEST_TIME,
                 args.REQUEST_TIME,
-                1,
                 rq_time,
-                rq_time
+                rq_time,
+                1,
                 )
         )
 
