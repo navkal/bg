@@ -110,21 +110,21 @@
     $iRspOffset = count( $output ) - 1;
     if ( $iRspOffset >= 0 )
     {
-      $tGatewayRsp = json_decode( $output[ $iRspOffset ] );
+      $tBacnetRsp = json_decode( $output[ $iRspOffset ] );
     }
     else
     {
-      $tGatewayRsp = [ 'status' => $status ];
+      $tBacnetRsp = [ 'status' => $status ];
     }
 
 
-    $tRsp =
+    $tGatewayRsp =
     [
-      'gateway_response' => $tGatewayRsp,
+      'bacnet_response' => $tBacnetRsp,
       'service_time' => round( 1000 * ( microtime( true ) - $t0 ) ) . ' ms'
     ];
 
-    $sJson = json_encode( $tRsp );
+    $sJson = json_encode( $tGatewayRsp );
 
     $sEcho = isset( $_GET['callback'] ) ? $_GET['callback'] . '(' . $sJson . ');' : $sJson;
   }
