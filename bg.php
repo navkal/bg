@@ -110,17 +110,17 @@
     $iRspOffset = count( $output ) - 1;
     if ( $iRspOffset >= 0 )
     {
-      $tBacnetRsp = json_decode( $output[ $iRspOffset ] );
+      $tInstanceRsp = json_decode( $output[ $iRspOffset ] );
     }
     else
     {
-      $tBacnetRsp = [ 'status' => $status ];
+      $tInstanceRsp = [ 'status' => $status ];
     }
 
 
     $tGatewayRsp =
     [
-      'bacnet_response' => $tBacnetRsp,
+      'instance_response' => $tInstanceRsp,
       'service_time' => round( 1000 * ( microtime( true ) - $t0 ) ) . ' ms'
     ];
 
