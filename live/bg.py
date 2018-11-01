@@ -9,6 +9,8 @@ import json
 import br
 
 
+_statistics = 0
+
 db = '../bg_db/queue.sqlite'
 conn = None
 cur = None
@@ -128,18 +130,17 @@ def sync_request( target_args ):
     cur.execute( 'UPDATE Requests SET completed=?, completion_time=?, response=? WHERE id=?', ( 1, completion_time, str( rsp_data[property] ) + ' ' + rsp_data['units'], this_rq_id, ) )
     conn.commit()
 
-    # Collect debug info
-    rsp_debug = {}
-    rsp_debug['response_time'] = str( round( ( completion_time - start_time ) * 1000 ) ) + ' ms'
-    rsp_debug['slept'] = [slept_1, slept_2, slept_3]
-    rsp_debug['timed_out'] = timed_out
-
     # Build the response
     rsp = {}
     rsp['data'] = collections.OrderedDict( sorted( rsp_data.items() ) )
-    rsp['debug'] = collections.OrderedDict( sorted( rsp_debug.items() ) )
     rsp['success'] = True
     rsp['message'] = ''
+    if _statistics:
+        rsp_stats = {}
+        rsp_stats['response_time'] = str( round( ( completion_time - start_time ) * 1000 ) ) + ' ms'
+        rsp_stats['slept'] = [slept_1, slept_2, slept_3]
+        rsp_stats['timed_out'] = timed_out
+        rsp['statistics'] = collections.OrderedDict( sorted( rsp_stats.items() ) )
     rsp = collections.OrderedDict( sorted( rsp.items() ) )
 
     return rsp

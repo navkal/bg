@@ -9,6 +9,8 @@ import json
 import cache_db
 
 
+_statistics = 0
+
 start_time = time.time()
 msg = None
 
@@ -43,18 +45,17 @@ if os.path.exists( db ):
         rsp_data['success'] = True
         rsp_data['message'] = ''
 
-        # Collect debug info
-        rsp_debug = {}
-        rsp_debug['response_time'] = str( round( ( time.time() - start_time ) * 1000 ) ) + ' ms'
-        rsp_debug['slept'] = [False, False, False]
-        rsp_debug['timed_out'] = False
-
         # Build the response
         rsp = {}
         rsp['data'] = collections.OrderedDict( sorted( rsp_data.items() ) )
-        rsp['debug'] = collections.OrderedDict( sorted( rsp_debug.items() ) )
         rsp['success'] = True
         rsp['message'] = ''
+        if _statistics:
+            rsp_stats = {}
+            rsp_stats['response_time'] = str( round( ( time.time() - start_time ) * 1000 ) ) + ' ms'
+            rsp_stats['slept'] = [False, False, False]
+            rsp_stats['timed_out'] = False
+            rsp['statistics'] = collections.OrderedDict( sorted( rsp_stats.items() ) )
         rsp = collections.OrderedDict( sorted( rsp.items() ) )
 
     else:
