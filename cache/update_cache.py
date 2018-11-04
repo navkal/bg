@@ -100,7 +100,7 @@ if __name__ == '__main__':
             cur = conn.cursor()
 
             # Get command line arguments
-            parser = argparse.ArgumentParser( description='Update cache of recently requested BACnet values', add_help=False )
+            parser = argparse.ArgumentParser( description='Update cache of recently requested values', add_help=False )
             parser.add_argument( '-h', dest='hostname' )
             parser.add_argument( '-p', dest='port' )
             parser.add_argument( '-s', dest='sleep_interval', type=int )

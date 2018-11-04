@@ -20,7 +20,7 @@ db = '../bg_db/cache.sqlite'
 if os.path.exists( db ):
 
     # Get arguments
-    parser = argparse.ArgumentParser( description='Get BACnet value from cache' )
+    parser = argparse.ArgumentParser( description='Get value from cache' )
     parser.add_argument( '-a', dest='address' )
     parser.add_argument( '-t', dest='type' )
     parser.add_argument( '-i', dest='instance' )

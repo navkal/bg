@@ -88,7 +88,7 @@ if __name__ == '__main__':
     if os.path.exists( db ):
 
         # Get arguments
-        parser = argparse.ArgumentParser( description='Get multiple BACnet values from cache' )
+        parser = argparse.ArgumentParser( description='Get multiple values from cache' )
         parser.add_argument( '-b', dest='bulk_request' )
         args = parser.parse_args()
 

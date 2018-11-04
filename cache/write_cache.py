@@ -110,7 +110,7 @@ def write_value():
 if __name__ == '__main__':
     import argparse
 
-    parser = argparse.ArgumentParser( description='Save BACnet value to cache' )
+    parser = argparse.ArgumentParser( description='Save value to cache' )
     parser.add_argument( '-a', dest='address' )
     parser.add_argument( '-t', dest='type' )
     parser.add_argument( '-i', dest='instance' )
