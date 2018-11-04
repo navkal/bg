@@ -1,4 +1,4 @@
-# Copyright 2018 BACnet Gateway.  All rights reserved.
+# Copyright 2018 Building Energy Gateway.  All rights reserved.
 
 from host import get_host_address
 from warnings import catch_warnings, simplefilter

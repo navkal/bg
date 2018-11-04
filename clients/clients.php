@@ -1,5 +1,5 @@
 <?php
-  // Copyright 2018 BACnet Gateway.  All rights reserved.
+  // Copyright 2018 Building Energy Gateway.  All rights reserved.
 
   if ( $_SERVER['REMOTE_ADDR'] != '127.0.0.1' )
   {

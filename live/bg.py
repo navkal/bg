@@ -1,4 +1,4 @@
-# Copyright 2018 BACnet Gateway.  All rights reserved.
+# Copyright 2018 Building Energy Gateway.  All rights reserved.
 
 import argparse
 import sqlite3
@@ -147,7 +147,7 @@ def sync_request( target_args ):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser( description='Propagate a BACnet read request from the BACnet Gateway to a BACnet agent' )
+    parser = argparse.ArgumentParser( description='Propagate a BACnet read request from the Building Energy Gateway to a BACnet agent' )
     parser.add_argument( '-a', dest='address',  help='Target IP address' )
     parser.add_argument( '-t', dest='type',  help='Target type' )
     parser.add_argument( '-i', dest='instance',  help='Target instance' )

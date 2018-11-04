@@ -1,4 +1,4 @@
-# Copyright 2018 BACnet Gateway.  All rights reserved.
+# Copyright 2018 Building Energy Gateway.  All rights reserved.
 
 import os
 import sqlite3
@@ -99,7 +99,7 @@ def track_client():
 if __name__ == '__main__':
     import argparse
 
-    parser = argparse.ArgumentParser( description='Track BACnet Gateway clients' )
+    parser = argparse.ArgumentParser( description='Track Building Energy Gateway clients' )
     parser.add_argument( '--REMOTE_ADDR', dest='REMOTE_ADDR' )
     parser.add_argument( '--HTTP_X_FORWARDED_FOR', dest='HTTP_X_FORWARDED_FOR' )
     parser.add_argument( '--HTTP_REFERER', dest='HTTP_REFERER' )

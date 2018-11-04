@@ -1,6 +1,6 @@
-# Copyright 2018 BACnet Gateway.  All rights reserved.
+# Copyright 2018 Building Energy Gateway.  All rights reserved.
 #
-# Continuously update BACnet Gateway cache
+# Continuously update Building Energy Gateway cache
 #
 # To run this script periodically, edit the root crontab:
 #   sudo crontab -e

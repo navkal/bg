@@ -1,4 +1,4 @@
-# Copyright 2018 BACnet Gateway.  All rights reserved.
+# Copyright 2018 Building Energy Gateway.  All rights reserved.
 
 import os
 import argparse
@@ -74,7 +74,7 @@ def post_request( address, type, instance, property ):
         'live': True
     }
 
-    # Issue request to BACnet Gateway
+    # Issue request to Building Energy Gateway
     url = 'http://' + args.hostname + ':' + str( args.port )
     requests.post( url, data=bg_args )
 
