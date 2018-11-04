@@ -64,7 +64,7 @@
 
     if ( ! $bLive)
     {
-      // Try to retrieve from Building Monitor cache
+      // Try to retrieve from cache
 
       // Format command
       $command = SUDO . quote( getenv( "PYTHON" ) ) . ' cache/read_cache.py'
