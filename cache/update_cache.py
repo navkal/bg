@@ -106,7 +106,7 @@ if __name__ == '__main__':
             parser.add_argument( '-s', dest='sleep_interval', type=int )
             args = parser.parse_args()
 
-            logpath = '../../bg_db/update_cache_' + time.strftime( '%Y-%m-%d_%H-%M-%S', time.localtime() ) + '.log'
+            logpath, notused = db_util.new_logs( '../../bg_db/update_cache' )
             db_util.log( logpath, os.path.basename( __file__ ) + ' starting' )
 
             # Update cache continuously

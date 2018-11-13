@@ -2,6 +2,8 @@
 
 import sqlite3
 import time
+import os
+from shutil import copyfile
 
 def save_field( table, field_name, field_value, cursor ):
 
@@ -44,3 +46,24 @@ def log( logpath, msg ):
     logfile = open( logpath , 'a' )
     logfile.write( s + '\n' )
     logfile.close()
+
+
+def new_logs( prefix, ext='log' ):
+
+    # Generate new log filenames
+    suffix = '.' + ext
+    logpath = prefix + '_' + time.strftime( '%Y-%m-%d_%H-%M-%S', time.localtime() ) + suffix
+    savepath = prefix + suffix
+
+    # Clean up pre-existing files of same names, if any
+    if os.path.exists( logpath ):
+        os.remove( logpath )
+
+    if os.path.exists( savepath ):
+        os.remove( savepath )
+
+    return logpath, savepath
+
+
+def save_log( logpath, savepath ):
+    copyfile( logpath, savepath )
