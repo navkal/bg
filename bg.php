@@ -1,8 +1,6 @@
 <?php
   // Copyright 2018 Building Energy Gateway.  All rights reserved.
 
-  error_log( '==> request=' . print_r( $_REQUEST, true ) );
-
   // Map facility name to IP address
   if ( isset( $_REQUEST['facility'] ) )
   {
