@@ -122,8 +122,9 @@
       'service_time' => round( 1000 * ( microtime( true ) - $t0 ) ) . ' ms'
     ];
 
-    $sJson = json_encode( $tGatewayRsp );
+    $sJson = json_encode( $tGatewayRsp, JSON_PRETTY_PRINT );
 
+    error_log( ' ============> ' . ( isset( $_GET['callback'] ) ? $_GET['callback'] : 'no callback' ) );
     $sEcho = isset( $_GET['callback'] ) ? $_GET['callback'] . '(' . $sJson . ');' : $sJson;
   }
   else
@@ -133,9 +134,10 @@
       $sMessage = '?';
     }
 
-    $sEcho = json_encode( $sMessage );
+    $sEcho = json_encode( $sMessage, JSON_PRETTY_PRINT );
   }
 
+  header( 'Content-Type: application/json' );
   echo $sEcho;
 
 

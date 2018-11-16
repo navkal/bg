@@ -88,5 +88,6 @@
   ];
 
   // Return JSON
-  $sEcho = json_encode( $aResult );
+  $sEcho = json_encode( $aResult, JSON_PRETTY_PRINT );
+  header( 'Content-Type: application/json' );
   echo $sEcho;
