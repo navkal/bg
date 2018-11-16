@@ -36,19 +36,14 @@
     global $g_sStationUrl;
     $g_sStationUrl = '';
 
-    error_log( '1' );
-
     if ( isset( $_REQUEST['facility'] ) )
     {
-    error_log( '2' );
       // Open CSV file containing list of weather stations
       $file = fopen( 'stations.csv', 'r' );
-    error_log( '3' );
 
       // Search CSV file for matching facility name
       while ( ( ( $line = fgetcsv( $file ) ) !== FALSE ) && ! $g_sStationUrl )
       {
-        error_log( '==========> rq fac=' . $_REQUEST['facility'] . ', csv line 0=' . $line[0] );
         if ( $_REQUEST['facility'] == $line[0] )
         {
           // Facility name found; save URL

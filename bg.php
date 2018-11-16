@@ -124,7 +124,6 @@
 
     $sJson = json_encode( $tGatewayRsp, JSON_PRETTY_PRINT );
 
-    error_log( ' ============> ' . ( isset( $_GET['callback'] ) ? $_GET['callback'] : 'no callback' ) );
     $sEcho = isset( $_GET['callback'] ) ? $_GET['callback'] . '(' . $sJson . ');' : $sJson;
   }
   else

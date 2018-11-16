@@ -12,7 +12,6 @@
   // Issue request to web service
   $curl = curl_init();
   curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
-  error_log( '=============> url=' . $g_sStationUrl );
   curl_setopt( $curl, CURLOPT_URL, $g_sStationUrl );
   $aRsp = json_decode( json_encode( json_decode( curl_exec( $curl ) ) ), true );
 
@@ -63,7 +62,6 @@
 
   // Return JSON
   $sJson = json_encode( $aResult, JSON_PRETTY_PRINT );
-  error_log( ' ============> ' . ( isset( $_GET['callback'] ) ? $_GET['callback'] : 'no callback' ) );
   $sEcho = isset( $_GET['callback'] ) ? $_GET['callback'] . '(' . $sJson . ');' : $sJson;
   header( 'Content-Type: application/json' );
   echo $sEcho;
