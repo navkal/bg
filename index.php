@@ -10,15 +10,15 @@
 
   // Determine how to service the request
   $sScriptName = '';
-  if ( isset( $_REQUEST['station'] ) )
-  {
-    // Weather station
-    $sScriptName = 'ws';
-  }
-  else if ( isset( $_REQUEST['bulk'] ) )
+  if ( isset( $_REQUEST['bulk'] ) )
   {
     // Get bulk
     $sScriptName = 'gb';
+  }
+  else if ( requestingWeatherStation() )
+  {
+    // Weather station
+    $sScriptName = 'ws';
   }
   else
   {
@@ -28,4 +28,38 @@
 
   // Service the request with the appropriate script
   require_once $_SERVER["DOCUMENT_ROOT"] . '/' . $sScriptName . '.php';
+
+
+  /////////////////
+  function requestingWeatherStation()
+  {
+    global $g_sStationUrl;
+    $g_sStationUrl = '';
+
+    error_log( '1' );
+
+    if ( isset( $_REQUEST['facility'] ) )
+    {
+    error_log( '2' );
+      // Open CSV file containing list of weather stations
+      $file = fopen( 'stations.csv', 'r' );
+    error_log( '3' );
+
+      // Search CSV file for matching facility name
+      while ( ( ( $line = fgetcsv( $file ) ) !== FALSE ) && ! $g_sStationUrl )
+      {
+        error_log( '==========> rq fac=' . $_REQUEST['facility'] . ', csv line 0=' . $line[0] );
+        if ( $_REQUEST['facility'] == $line[0] )
+        {
+          // Facility name found; save URL
+          $g_sStationUrl = $line[1];
+        }
+      }
+
+      fclose($file);
+    }
+
+    return $g_sStationUrl;
+  }
+
 ?>
