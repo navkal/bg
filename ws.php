@@ -8,7 +8,7 @@
   [
     'ahs' =>
     [
-      'label' => 'Andover High School Weather Station',
+      'label' => 'Andover High School',
       'url' => 'https://owc.enterprise.earthnetworks.com/Data/GetData.ashx?dt=o&pi=3&si=ANSHS&locstr=42.65998,-71.15531&units=english&verbose=true'
     ]
   ];
