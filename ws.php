@@ -88,6 +88,8 @@
   ];
 
   // Return JSON
-  $sEcho = json_encode( $aResult, JSON_PRETTY_PRINT );
+  $sJson = json_encode( $aResult, JSON_PRETTY_PRINT );
+  error_log( ' ============> ' . ( isset( $_GET['callback'] ) ? $_GET['callback'] : 'no callback' ) );
+  $sEcho = isset( $_GET['callback'] ) ? $_GET['callback'] . '(' . $sJson . ');' : $sJson;
   header( 'Content-Type: application/json' );
   echo $sEcho;
