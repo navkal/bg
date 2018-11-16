@@ -1,54 +1,31 @@
 <?php
   // Copyright 2018 Building Energy Gateway.  All rights reserved.
 
-  define( 'NO_PROPERTY', 'NO_PROPERTY' );
-
-  // Get request argument
-  $sProperty = isset( $_REQUEST['instance'] ) ? $_REQUEST['instance'] : '';
-
   $sMessage = '';
-  $property = NO_PROPERTY;
+  $sInstance = '';
+  $g_aProperty = [];
 
-  // Issue request to web service
-  $curl = curl_init();
-  curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
-  curl_setopt( $curl, CURLOPT_URL, $g_sStationUrl );
-  $aRsp = json_decode( json_encode( json_decode( curl_exec( $curl ) ) ), true );
-
-  // Determine result: either requested property or full response
-  if ( $sProperty )
+  if ( isset( $_REQUEST['instance'] ) )
   {
-    // Caller requested a property; search for it in the response
+    $sInstance = $_REQUEST['instance'];
 
-    if ( array_key_exists( $sProperty, $aRsp ) )
-    {
-      // Requested property found at top level of response
-      $property = $aRsp[$sProperty];
-    }
-    else
-    {
-      foreach ( $aRsp as $aProps )
-      {
-        if ( array_key_exists( $sProperty, $aProps ) )
-        {
-          // Requested property found at second level of response
-          $property = $aProps[$sProperty];
-          break;
-        }
-      }
-    }
+    // Issue request to web service
+    $curl = curl_init();
+    curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
+    curl_setopt( $curl, CURLOPT_URL, $g_sStationUrl );
+    $aRsp = json_decode( json_encode( json_decode( curl_exec( $curl ) ) ), true );
 
-    if ( $property == NO_PROPERTY )
+    // Traverse response to find requested property
+    extractProperty( $sInstance, $aRsp );
+
+    if ( empty( $g_aProperty ) )
     {
-      // Requested property not found
-      $property = '';
-      $sMessage = "Property '" . $sProperty . "' not found";
+      $sMessage = "Instance '" . $sInstance . "' not found";
     }
   }
   else
   {
-    // Caller did not request a property; return full response
-    $property = $aRsp;
+    $sMessage = "Parameter 'instance' is missing";
   }
 
   // Load results into structure
@@ -56,8 +33,8 @@
   [
     'success' => ( $sMessage == '' ),
     'message' => $sMessage,
-    'requestedProperty' => $sProperty,
-    $sProperty => $property
+    'requestedProperty' => $sInstance,
+    $sInstance => $g_aProperty
   ];
 
   // Return JSON
@@ -65,3 +42,35 @@
   $sEcho = isset( $_GET['callback'] ) ? $_GET['callback'] . '(' . $sJson . ');' : $sJson;
   header( 'Content-Type: application/json' );
   echo $sEcho;
+
+
+
+  ////////////////////////////////////////////
+
+  function extractProperty( $sPropName, $aRsp )
+  {
+    global $g_aProperty;
+
+    foreach ( $aRsp as $sKey => $val )
+    {
+      error_log( 'trying ' . $sKey );
+      if ( is_array( $val ) )
+      {
+        extractProperty( $sPropName, $val );
+      }
+      else
+      {
+        if ( $sPropName == $sKey )
+        {
+          $g_aProperty = [ 'value' => $val, 'units' => 'foonits' ];
+          error_log( '========> DONE' );
+        }
+      }
+
+      if ( ! empty( $g_aProperty  ) )
+      {
+        break;
+      }
+    }
+  }
+?>
