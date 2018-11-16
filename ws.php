@@ -7,6 +7,8 @@
 
   if ( isset( $_REQUEST['instance'] ) )
   {
+    $t0 = microtime( true );
+
     $sInstance = $_REQUEST['instance'];
 
     // Issue request to web service
@@ -29,16 +31,29 @@
   }
 
   // Load results into structure
-  $aResult =
+
+  $tInstanceRsp =
   [
-    'success' => ( $sMessage == '' ),
+    'data' =>
+    [
+      'message' => '',
+      'success' => true,
+      'property' => $sInstance,
+      $sInstance => $g_aProperty['value'],
+      'units' => $g_aProperty['units']
+    ],
     'message' => $sMessage,
-    'requestedProperty' => $sInstance,
-    $sInstance => $g_aProperty
+    'success' => ( $sMessage == '' ),
+  ];
+
+  $tGatewayRsp =
+  [
+    'instance_response' => $tInstanceRsp,
+    'service_time' => round( 1000 * ( microtime( true ) - $t0 ) ) . ' ms'
   ];
 
   // Return JSON
-  $sJson = json_encode( $aResult, JSON_PRETTY_PRINT );
+  $sJson = json_encode( $tGatewayRsp, JSON_PRETTY_PRINT );
   $sEcho = isset( $_GET['callback'] ) ? $_GET['callback'] . '(' . $sJson . ');' : $sJson;
   header( 'Content-Type: application/json' );
   echo $sEcho;
