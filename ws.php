@@ -1,6 +1,8 @@
 <?php
   // Copyright 2018 Building Energy Gateway.  All rights reserved.
 
+  define( 'NO_PROPERTY', 'NO_PROPERTY' );
+
   // Table of weather stations
   $aStations =
   [
@@ -17,6 +19,7 @@
 
   $sMessage = '';
   $sLabel = '';
+  $property = NO_PROPERTY;
 
   // Look for requested weather station in table
   if ( isset( $aStations[$sStation] ) )
@@ -53,7 +56,7 @@
         }
       }
 
-      if ( ! isset( $property ) )
+      if ( $property == NO_PROPERTY )
       {
         // Requested property not found
         $property = '';
