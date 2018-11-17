@@ -78,7 +78,6 @@
 
     foreach ( $aRsp as $sKey => $val )
     {
-      error_log( '===> trying ' . $sKey );
       if ( is_array( $val ) )
       {
         extractProperty( $sPropName, $val );
@@ -88,7 +87,6 @@
         if ( $sPropName == $sKey )
         {
           $g_aProperty = [ 'value' => $val, 'units' => makeUnits( $sPropName ) ];
-          error_log( '========> DONE' );
         }
       }
 
