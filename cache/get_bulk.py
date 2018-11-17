@@ -39,8 +39,7 @@ def make_fac_addr_map():
 
                 # Add map entry
                 facility = station_row[0].strip()
-                address = facility
-                fac_addr_map[facility] = address
+                fac_addr_map[facility] = facility
 
     return fac_addr_map
 
