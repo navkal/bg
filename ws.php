@@ -1,13 +1,14 @@
 <?php
   // Copyright 2018 Building Energy Gateway.  All rights reserved.
 
+  $t0 = microtime( true );
+
   $sMessage = '';
   $sInstance = '';
   $g_aProperty = [];
 
   if ( isset( $_REQUEST['instance'] ) )
   {
-    $t0 = microtime( true );
 
     $sInstance = $_REQUEST['instance'];
 
@@ -30,21 +31,30 @@
     $sMessage = "Parameter 'instance' is missing";
   }
 
-  // Load results into structure
+  // Build response structure
 
   $tInstanceRsp =
   [
-    'data' =>
+    'message' => $sMessage,
+    'success' => ( $sMessage == '' )
+  ];
+
+  if ( $tInstanceRsp['success'] )
+  {
+    // Load data into response
+    $tInstanceRsp['data'] =
     [
       'message' => '',
       'success' => true,
-      'property' => $sInstance,
-      $sInstance => $g_aProperty['value'],
+      'instance' => $sInstance,
+      'property' => 'presentValue',
+      'presentValue' => $g_aProperty['value'],
       'units' => $g_aProperty['units']
-    ],
-    'message' => $sMessage,
-    'success' => ( $sMessage == '' ),
-  ];
+    ];
+
+    // Save result in cache
+    writeCache( $tInstanceRsp['data'] );
+  }
 
   $tGatewayRsp =
   [
@@ -68,7 +78,7 @@
 
     foreach ( $aRsp as $sKey => $val )
     {
-      error_log( 'trying ' . $sKey );
+      error_log( '===> trying ' . $sKey );
       if ( is_array( $val ) )
       {
         extractProperty( $sPropName, $val );
@@ -77,7 +87,7 @@
       {
         if ( $sPropName == $sKey )
         {
-          $g_aProperty = [ 'value' => $val, 'units' => 'foonits' ];
+          $g_aProperty = [ 'value' => $val, 'units' => makeUnits( $sPropName ) ];
           error_log( '========> DONE' );
         }
       }
@@ -88,4 +98,35 @@
       }
     }
   }
+
+  function makeUnits( $sPropName )
+  {
+    $tUnitsMap =
+    [
+      'temperature' => 'deg F',
+      'humidity' => '%'
+    ];
+
+    $sUnits = isset( $tUnitsMap[$sPropName] ) ? $tUnitsMap[$sPropName] : '';
+
+    return $sUnits;
+  }
+
+  function writeCache( $aData )
+  {
+    // Format command, filling in unused parameters with defaults applicable to BACnet values
+    $command = SUDO . quote( getenv( "PYTHON" ) ) . ' cache/write_cache.py'
+      . ' -a ' . $_REQUEST['facility']
+      . ' -t ' . 'analogInput'
+      . ' -i ' . $_REQUEST['instance']
+      . ' -p ' . 'presentValue'
+      . ' -v ' . quote( $aData['presentValue'] )
+      . ' -u ' . quote( $aData['units'] );
+
+    // Execute command
+    error_log( "==> command=" . $command );
+    exec( $command, $output, $status );
+    error_log( "==> output=" . print_r( $output, true ) );
+  }
+
 ?>

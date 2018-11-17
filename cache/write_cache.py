@@ -36,9 +36,9 @@ def open_db():
                 id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 address_id INTEGER,
                 type_id INTEGER,
-                instance INTEGER,
+                instance TEXT,
                 property_id INTEGER,
-                value INTEGER,
+                value TEXT,
                 units_id INTEGER,
                 update_timestamp INTEGER,
                 access_timestamp INTEGER

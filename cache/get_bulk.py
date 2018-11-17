@@ -29,6 +29,19 @@ def make_fac_addr_map():
                 address = socket.inet_ntoa( struct.pack( '>L', int( agent_row[1].strip(), 16 ) ) )
                 fac_addr_map[facility] = address
 
+    with open( 'stations.csv', newline='' ) as csvfile:
+        reader = csv.reader( csvfile )
+
+        for station_row in reader:
+
+            # Skip empty and comment lines
+            if ( len( station_row ) > 0 ) and not station_row[0].startswith( '#' ):
+
+                # Add map entry
+                facility = station_row[0].strip()
+                address = facility
+                fac_addr_map[facility] = address
+
     return fac_addr_map
 
 
