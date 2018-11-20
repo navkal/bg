@@ -31,6 +31,7 @@
 
 
   /////////////////
+
   function requestingWeatherStation()
   {
     global $g_sStationUrl;
@@ -39,7 +40,8 @@
     if ( isset( $_REQUEST['facility'] ) )
     {
       // Open CSV file containing list of weather stations
-      $file = fopen( 'stations.csv', 'r' );
+      $file = fopen( 'facilities.csv', 'r' );
+      fgetcsv( $file );
 
       // Search CSV file for matching facility name
       while ( ( ( $line = fgetcsv( $file ) ) !== FALSE ) && ! $g_sStationUrl )
@@ -47,7 +49,7 @@
         if ( $_REQUEST['facility'] == $line[0] )
         {
           // Facility name found; save URL
-          $g_sStationUrl = $line[1];
+          $g_sStationUrl = $line[3];
         }
       }
 
