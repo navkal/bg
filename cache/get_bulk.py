@@ -12,45 +12,48 @@ import cache_db
 import collections
 
 
-def make_fac_addr_map():
+def make_facility_map():
 
-    fac_addr_map = {}
+    facility_map = {}
 
-    with open( 'agents.csv', newline='' ) as csvfile:
+    with open( 'facilities.csv', newline='' ) as csvfile:
         reader = csv.reader( csvfile )
 
-        for agent_row in reader:
+        # Skip header line
+        next( reader )
+
+        for facility_row in reader:
 
             # Skip empty and comment lines
-            if ( len( agent_row ) > 0 ) and not agent_row[0].startswith( '#' ):
+            if ( len( facility_row ) > 0 ) and not facility_row[0].strip().startswith( '#' ):
 
                 # Add map entry
-                facility = agent_row[0].strip()
-                address = socket.inet_ntoa( struct.pack( '>L', int( agent_row[1].strip(), 16 ) ) )
-                fac_addr_map[facility] = { 'address' : address, 'default_type': 'analogInput' }
+                facility = facility_row[0].strip()
+                facility_type = facility_row[1].strip()
+                facility_map[facility] = { 'facility': facility, 'facility_type': facility_type }
 
-    with open( 'stations.csv', newline='' ) as csvfile:
-        reader = csv.reader( csvfile )
+                if facility_type == 'bacnetAgent':
+                    address = socket.inet_ntoa( struct.pack( '>L', int( facility_row[2].strip(), 16 ) ) )
+                    facility_map[facility]['address'] = address
+                    facility_map[facility]['default_type'] = 'analogInput'
 
-        for station_row in reader:
+                elif facility_type == 'weatherStation':
+                    facility_map[facility]['address'] = facility
+                    facility_map[facility]['default_type'] = 'weatherData'
 
-            # Skip empty and comment lines
-            if ( len( station_row ) > 0 ) and not station_row[0].startswith( '#' ):
+                else:
+                    # Unrecognized facility type; don't create map entry
+                    pass
 
-                # Add map entry
-                facility = station_row[0].strip()
-                address = station_row[1].strip()
-                fac_addr_map[facility] = { 'address': address, 'default_type': 'weatherData' }
-
-    return fac_addr_map
+    return facility_map
 
 
 def make_rsp( rq ):
 
     msg = ''
 
-    if 'facility' in rq and rq['facility'] in fac_addr_map:
-        map_entry = fac_addr_map[rq['facility']]
+    if 'facility' in rq and rq['facility'] in facility_map:
+        map_entry = facility_map[rq['facility']]
 
         # Map facility to address
         rq['address'] = map_entry['address']
@@ -80,7 +83,7 @@ def make_rsp( rq ):
         msg = 'Missing arguments'
 
     # Remove mapped address from result
-    if 'facility' in rq and rq['facility'] in fac_addr_map:
+    if 'facility' in rq and rq['facility'] in facility_map:
         del rq['address']
 
     # Create response
@@ -117,7 +120,7 @@ if __name__ == '__main__':
             if isinstance( bulk_rq, list ) and len( bulk_rq ):
 
                 # Build facility-to-address map
-                fac_addr_map = make_fac_addr_map()
+                facility_map = make_facility_map()
 
                 # Connect to the database
                 conn = sqlite3.connect( db )
