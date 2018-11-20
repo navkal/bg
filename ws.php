@@ -112,10 +112,12 @@
 
   function writeCache( $aData )
   {
-    // Format command, filling in unused parameters with defaults applicable to BACnet values
+    global $g_sStationUrl;
+
+    // Format command
     $command = SUDO . quote( getenv( "PYTHON" ) ) . ' cache/write_cache.py'
-      . ' -a ' . $_REQUEST['facility']
-      . ' -t ' . 'analogInput'
+      . ' -a ' . quote( $g_sStationUrl )
+      . ' -t ' . 'weatherData'
       . ' -i ' . $_REQUEST['instance']
       . ' -p ' . 'presentValue'
       . ' -v ' . quote( $aData['presentValue'] )

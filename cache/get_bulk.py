@@ -27,7 +27,7 @@ def make_fac_addr_map():
                 # Add map entry
                 facility = agent_row[0].strip()
                 address = socket.inet_ntoa( struct.pack( '>L', int( agent_row[1].strip(), 16 ) ) )
-                fac_addr_map[facility] = address
+                fac_addr_map[facility] = { 'address' : address, 'default_type': 'analogInput' }
 
     with open( 'stations.csv', newline='' ) as csvfile:
         reader = csv.reader( csvfile )
@@ -39,7 +39,8 @@ def make_fac_addr_map():
 
                 # Add map entry
                 facility = station_row[0].strip()
-                fac_addr_map[facility] = facility
+                address = station_row[1].strip()
+                fac_addr_map[facility] = { 'address': address, 'default_type': 'weatherData' }
 
     return fac_addr_map
 
@@ -48,13 +49,15 @@ def make_rsp( rq ):
 
     msg = ''
 
-    # Map facility to address
     if 'facility' in rq and rq['facility'] in fac_addr_map:
-        rq['address'] = fac_addr_map[rq['facility']]
+        map_entry = fac_addr_map[rq['facility']]
 
-    # Set default type
-    if 'type' not in rq:
-        rq['type'] = 'analogInput'
+        # Map facility to address
+        rq['address'] = map_entry['address']
+
+        # Set default type
+        if 'type' not in rq:
+            rq['type'] = map_entry['default_type']
 
     # Set default property
     if 'property' not in rq:
@@ -76,7 +79,7 @@ def make_rsp( rq ):
     else:
         msg = 'Missing arguments'
 
-    # Remove mapped address
+    # Remove mapped address from result
     if 'facility' in rq and rq['facility'] in fac_addr_map:
         del rq['address']
 
