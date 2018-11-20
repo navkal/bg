@@ -6,6 +6,7 @@ import sqlite3
 import time
 import datetime
 import requests
+import csv
 
 import sys
 sys.path.append( '../util' )
@@ -15,6 +16,25 @@ idle_max = datetime.timedelta( days=7 )
 stale_max = datetime.timedelta( minutes=30 )
 
 log_filename = None
+
+
+def get_weather_stations():
+
+    stations = {}
+
+    with open( '../stations.csv', newline='' ) as csvfile:
+        reader = csv.reader( csvfile )
+
+        for station_row in reader:
+
+            # Skip empty and comment lines
+            if ( len( station_row ) > 0 ) and not station_row[0].startswith( '#' ):
+
+                # Add map entry
+                facility = station_row[0].strip()
+                stations[facility] = facility
+
+    return stations
 
 
 def update_cache():
@@ -67,12 +87,16 @@ def post_request( address, type, instance, property ):
 
     # Set up request arguments
     bg_args = {
-        'address': address,
         'type': type,
         'instance': instance,
         'property': property,
         'live': True
     }
+
+    if address in weather_stations:
+        bg_args['facility'] = address
+    else:
+        bg_args['address'] = address
 
     # Issue request to Building Energy Gateway
     url = 'http://' + args.hostname + ':' + str( args.port )
@@ -98,6 +122,9 @@ if __name__ == '__main__':
             # Open database
             conn = sqlite3.connect( db )
             cur = conn.cursor()
+
+            # Get list of weather stations
+            weather_stations = get_weather_stations()
 
             # Get command line arguments
             parser = argparse.ArgumentParser( description='Update cache of recently requested values', add_help=False )

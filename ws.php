@@ -116,7 +116,7 @@
 
     // Format command
     $command = SUDO . quote( getenv( "PYTHON" ) ) . ' cache/write_cache.py'
-      . ' -a ' . quote( $g_sStationUrl )
+      . ' -a ' . $_REQUEST['facility']
       . ' -t ' . 'weatherData'
       . ' -i ' . $_REQUEST['instance']
       . ' -p ' . 'presentValue'
