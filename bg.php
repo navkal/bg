@@ -8,7 +8,10 @@
     unset( $_REQUEST['address'] );
 
     // Open CSV file containing mappings from facility names to IP addresses
-    $file = fopen( 'agents.csv', 'r' );
+    $file = fopen( 'facilities.csv', 'r' );
+
+    // Skip the header
+    fgetcsv( $file );
 
     // Traverse lines of the file until match is found
     $bFound = false;
@@ -22,7 +25,7 @@
       if ( $sFacility && ( substr( $sFacility, 0, 1 ) != '#' ) && ( $sFacility == $_REQUEST['facility'] ) )
       {
         $bFound = true;
-        $_REQUEST['address'] = long2ip( hexdec( $aLine[1] ) );
+        $_REQUEST['address'] = long2ip( hexdec( $aLine[2] ) );
       }
     }
 
