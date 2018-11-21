@@ -5,7 +5,7 @@ import socket
 import struct
 
 
-def get_facilities( path='' ):
+def make_facility_map( path='' ):
 
     facility_map = {}
 
@@ -23,7 +23,7 @@ def get_facilities( path='' ):
                 # Add map entry
                 facility = facility_row[0].strip()
                 facility_type = facility_row[1].strip()
-                facility_map[facility] = { 'facility': facility, 'facility_type': facility_type }
+                facility_map[facility] = { 'facility': facility, 'facility_type': facility_type, 'address': None, 'default_type': None, 'url': None }
 
                 if facility_type == 'bacnetAgent':
                     address = socket.inet_ntoa( struct.pack( '>L', int( facility_row[2].strip(), 16 ) ) )
@@ -33,9 +33,10 @@ def get_facilities( path='' ):
                 elif facility_type == 'weatherStation':
                     facility_map[facility]['address'] = facility
                     facility_map[facility]['default_type'] = 'weatherData'
+                    facility_map[facility]['url'] = facility_row[3].strip()
 
                 else:
-                    # Unrecognized facility type; don't create map entry
+                    # Unrecognized facility type
                     pass
 
     return facility_map

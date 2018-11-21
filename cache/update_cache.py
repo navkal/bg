@@ -21,7 +21,7 @@ log_filename = None
 
 def get_weather_stations():
 
-    facilities = csv_util.get_facilities( '../' )
+    facilities = csv_util.make_facility_map( '../' )
 
     stations = {}
 

@@ -86,7 +86,7 @@ if __name__ == '__main__':
             if isinstance( bulk_rq, list ) and len( bulk_rq ):
 
                 # Get map of facilities
-                facility_map = csv_util.get_facilities()
+                facility_map = csv_util.make_facility_map()
 
                 # Connect to the database
                 conn = sqlite3.connect( db )
