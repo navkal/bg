@@ -46,7 +46,7 @@
       // Search CSV file for matching facility name
       while ( ( ( $line = fgetcsv( $file ) ) !== FALSE ) && ! $g_sStationUrl )
       {
-        if ( $_REQUEST['facility'] == $line[0] )
+        if ( ( $_REQUEST['facility'] == $line[0] ) && ( $line[1] == 'weatherStation' ) )
         {
           // Facility name found; save URL
           $g_sStationUrl = $line[3];
