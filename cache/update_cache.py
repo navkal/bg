@@ -11,6 +11,7 @@ import csv
 import sys
 sys.path.append( '../util' )
 import db_util
+import csv_util
 
 idle_max = datetime.timedelta( days=7 )
 stale_max = datetime.timedelta( minutes=30 )
@@ -20,19 +21,13 @@ log_filename = None
 
 def get_weather_stations():
 
+    facilities = csv_util.get_facilities( '../' )
+
     stations = {}
 
-    with open( '../stations.csv', newline='' ) as csvfile:
-        reader = csv.reader( csvfile )
-
-        for station_row in reader:
-
-            # Skip empty and comment lines
-            if ( len( station_row ) > 0 ) and not station_row[0].startswith( '#' ):
-
-                # Add map entry
-                facility = station_row[0].strip()
-                stations[facility] = facility
+    for facility in facilities:
+        if facilities[facility]['facility_type'] == 'weatherStation':
+            stations[facility] = facility
 
     return stations
 
