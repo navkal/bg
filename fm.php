@@ -1,17 +1,13 @@
 <?php
   // Copyright 2018 Building Energy Gateway.  All rights reserved.
 
-  $aFacilityMap = [];
+  $aFacilities = [];
 
-  foreach ( $g_aFacilities as $sFacType => $aFacsOfType )
+  foreach ( $g_aFacilities as $sName => $aProps )
   {
-    $aFacilityMap[$sFacType] = [];
-    foreach ( $aFacsOfType as $sFacName => $aFac )
-    {
-      array_push( $aFacilityMap[$sFacType], $sFacName );
-    }
+    $aFacilities[$sName] = [ 'facility_type' => $g_aFacilities[$sName]['facility_type'] ];
   }
 
   // Echo result
-  echo json_encode( $aFacilityMap );
+  echo json_encode( $aFacilities );
 ?>

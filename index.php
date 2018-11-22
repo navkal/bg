@@ -67,12 +67,7 @@
         $sUrl = trim( $line[3] );
 
         // Insert into facility map
-        if ( ! isset( $g_aFacilities[$sFacilityType] ) )
-        {
-          $g_aFacilities[$sFacilityType] = [];
-        }
-
-        $g_aFacilities[$sFacilityType][$sFacility] = [ 'address' => $sAddress, 'url' => $sUrl ];
+        $g_aFacilities[$sFacility] = [ 'facility_type' => $sFacilityType, 'address' => $sAddress, 'url' => $sUrl ];
       }
       else error_log( '======> skipping <' . print_r( $line, true ) . '>' );
     }
@@ -86,9 +81,9 @@
     global $g_sWeatherStationUrl;
 
     $g_sWeatherStationUrl =
-      ( isset( $_REQUEST['facility'] ) ) && isset( $g_aFacilities['weatherStation'] ) && isset( $g_aFacilities['weatherStation'][$_REQUEST['facility']] )
+      isset( $_REQUEST['facility'] ) && isset( $g_aFacilities[$_REQUEST['facility']] ) && ( $g_aFacilities[$_REQUEST['facility']]['facility_type'] == 'weatherStation' )
       ?
-        $g_aFacilities['weatherStation'][$_REQUEST['facility']]['url']
+        $g_aFacilities[$_REQUEST['facility']]['url']
       :
         ''
       ;
