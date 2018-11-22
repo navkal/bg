@@ -15,15 +15,26 @@
     // Get bulk
     $sScriptName = 'gb';
   }
-  else if ( requestingWeatherStation() )
-  {
-    // Weather station
-    $sScriptName = 'ws';
-  }
   else
   {
-    // BACnet Gateway
-    $sScriptName = 'bg';
+    // Load list of facilities
+    getFacilities();
+
+    if ( isset( $_REQUEST['facilities'] ) )
+    {
+      // Facilities map
+      $sScriptName = 'fm';
+    }
+    else if ( findWeatherStationUrl() )
+    {
+      // Weather station
+      $sScriptName = 'ws';
+    }
+    else
+    {
+      // BACnet Gateway
+      $sScriptName = 'bg';
+    }
   }
 
   // Service the request with the appropriate script
@@ -32,31 +43,56 @@
 
   /////////////////
 
-  function requestingWeatherStation()
+  function getFacilities()
   {
-    global $g_sStationUrl;
-    $g_sStationUrl = '';
+    global $g_aFacilities;
+    $g_aFacilities = [];
 
-    if ( isset( $_REQUEST['facility'] ) )
+    // Open CSV file containing list of facilities
+    $file = fopen( 'facilities.csv', 'r' );
+
+    // Skip header line
+    fgetcsv( $file );
+
+    // Iterate over lines of file
+    while ( ( $line = fgetcsv( $file ) ) !== FALSE )
     {
-      // Open CSV file containing list of weather stations
-      $file = fopen( 'facilities.csv', 'r' );
-      fgetcsv( $file );
-
-      // Search CSV file for matching facility name
-      while ( ( ( $line = fgetcsv( $file ) ) !== FALSE ) && ! $g_sStationUrl )
+      // If line is not empty or commented out...
+      if ( ( count( $line ) > 0 ) && ( trim( $line[0] ) != '' ) && ( substr( trim( $line[0] ), 0, 1 ) != '#' ) )
       {
-        if ( ( $_REQUEST['facility'] == $line[0] ) && ( $line[1] == 'weatherStation' ) )
-        {
-          // Facility name found; save URL
-          $g_sStationUrl = $line[3];
-        }
-      }
+        // Get facility name and type from line
+        $sFacility = trim( $line[0] );
+        $sFacilityType = trim( $line[1] );
+        $sAddress = trim( $line[2] );
+        $sUrl = trim( $line[3] );
 
-      fclose($file);
+        // Insert into facility map
+        if ( ! isset( $g_aFacilities[$sFacilityType] ) )
+        {
+          $g_aFacilities[$sFacilityType] = [];
+        }
+
+        $g_aFacilities[$sFacilityType][$sFacility] = [ 'address' => $sAddress, 'url' => $sUrl ];
+      }
+      else error_log( '======> skipping <' . print_r( $line, true ) . '>' );
     }
 
-    return $g_sStationUrl;
+    fclose($file);
   }
 
+  function findWeatherStationUrl()
+  {
+    global $g_aFacilities;
+    global $g_sWeatherStationUrl;
+
+    $g_sWeatherStationUrl =
+      ( isset( $_REQUEST['facility'] ) ) && isset( $g_aFacilities['weatherStation'] ) && isset( $g_aFacilities['weatherStation'][$_REQUEST['facility']] )
+      ?
+        $g_aFacilities['weatherStation'][$_REQUEST['facility']]['url']
+      :
+        ''
+      ;
+
+    return $g_sWeatherStationUrl;
+  }
 ?>

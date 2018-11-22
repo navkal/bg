@@ -15,7 +15,7 @@
     // Issue request to web service
     $curl = curl_init();
     curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
-    curl_setopt( $curl, CURLOPT_URL, $g_sStationUrl );
+    curl_setopt( $curl, CURLOPT_URL, $g_sWeatherStationUrl );
     $aRsp = json_decode( json_encode( json_decode( curl_exec( $curl ) ) ), true );
 
     // Traverse response to find requested property
@@ -112,7 +112,7 @@
 
   function writeCache( $aData )
   {
-    global $g_sStationUrl;
+    global $g_sWeatherStationUrl;
 
     // Format command
     $command = SUDO . quote( getenv( "PYTHON" ) ) . ' cache/write_cache.py'
