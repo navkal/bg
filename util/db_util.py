@@ -5,14 +5,26 @@ import time
 import os
 from shutil import copyfile
 
-def save_field( table, field_name, field_value, cursor ):
+
+# Save unique field value in table, if not already present, and return its row ID
+def save_field( table, field_name, field_value, cursor, other_fields={} ):
 
     # Find out if this field value already exists in the specified table
     row_id = get_id( table, field_name, field_value, cursor )
 
     # Field value does not exist; insert it
     if row_id == None:
-        cursor.execute( 'INSERT INTO ' + table + ' ( ' + field_name + ' ) VALUES(?)', ( field_value, ) )
+        names = field_name
+        qs = '?'
+        values = [ field_value ]
+
+        for other_name in other_fields:
+            names += ',' + other_name
+            qs += ',?'
+            values.append( other_fields[other_name] )
+
+        print( 'INSERT INTO ' + table + ' ( ' + names + ' ) VALUES(' + qs + ')', tuple( values ) )
+        cursor.execute( 'INSERT INTO ' + table + ' ( ' + names + ' ) VALUES(' + qs + ')', tuple( values ) )
         row_id = cursor.lastrowid
 
     # Return id

@@ -7,6 +7,7 @@ import time
 import sys
 sys.path.append( 'util' )
 import db_util
+import csv_util
 
 
 def open_db():
@@ -46,7 +47,14 @@ def open_db():
 
             CREATE TABLE IF NOT EXISTS Addresses (
                 id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-                address TEXT UNIQUE
+                address TEXT UNIQUE,
+                facility TEXT UNIQUE,
+                facility_type_id INTEGER
+            );
+
+            CREATE TABLE IF NOT EXISTS FacilityTypes (
+                id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                facility_type TEXT UNIQUE
             );
 
             CREATE TABLE IF NOT EXISTS Types (
@@ -97,7 +105,20 @@ def write_value():
     else:
 
         # Entry does not exist; insert it
-        address_id = db_util.save_field( 'Addresses', 'address', args.address, cur )
+
+        # Find facility type
+        facility_map = csv_util.make_facility_map()
+        facility = None
+        facility_type = None
+        for fac in facility_map:
+            if facility_map[fac]['address'] == args.address:
+                facility = facility_map[fac]['facility']
+                facility_type = facility_map[fac]['facility_type']
+                break
+
+        # Insert into database
+        facility_type_id = db_util.save_field( 'FacilityTypes', 'facility_type', facility_type, cur )
+        address_id = db_util.save_field( 'Addresses', 'address', args.address, cur, other_fields={ 'facility': facility, 'facility_type_id': facility_type_id } )
         type_id = db_util.save_field( 'Types', 'type', args.type, cur )
         property_id = db_util.save_field( 'Properties', 'property', args.property, cur )
         access_timestamp = update_timestamp
