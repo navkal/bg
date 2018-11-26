@@ -23,7 +23,6 @@ def save_field( table, field_name, field_value, cursor, other_fields={} ):
             qs += ',?'
             values.append( other_fields[other_name] )
 
-        print( 'INSERT INTO ' + table + ' ( ' + names + ' ) VALUES(' + qs + ')', tuple( values ) )
         cursor.execute( 'INSERT INTO ' + table + ' ( ' + names + ' ) VALUES(' + qs + ')', tuple( values ) )
         row_id = cursor.lastrowid
 
