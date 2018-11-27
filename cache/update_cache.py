@@ -19,19 +19,6 @@ stale_max = datetime.timedelta( minutes=30 )
 log_filename = None
 
 
-def get_weather_stations():
-
-    facilities = csv_util.make_facility_map( '../' )
-
-    stations = {}
-
-    for facility in facilities:
-        if facilities[facility]['facility_type'] == 'weatherStation':
-            stations[facility] = facility
-
-    return stations
-
-
 def update_cache():
     start_time = time.time()
 
@@ -118,9 +105,6 @@ if __name__ == '__main__':
             # Open database
             conn = sqlite3.connect( db )
             cur = conn.cursor()
-
-            # Get list of weather stations
-            weather_stations = get_weather_stations()
 
             # Get command line arguments
             parser = argparse.ArgumentParser( description='Update cache of recently requested values', add_help=False )
