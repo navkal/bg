@@ -37,11 +37,12 @@ def update_cache():
 
     cur.execute( '''
         SELECT
-            Cache.id, Addresses.address, Types.type, Cache.instance, Properties.property, Cache.update_timestamp, Cache.access_timestamp
+            Cache.id, Types.type, Cache.instance, Properties.property, FacilityTypes.facility_type, Addresses.facility, Addresses.address, Cache.update_timestamp, Cache.access_timestamp
         FROM Cache
-            LEFT JOIN Addresses ON Cache.address_id=Addresses.id
             LEFT JOIN Types ON Cache.type_id=Types.id
             LEFT JOIN Properties ON Cache.property_id=Properties.id
+            LEFT JOIN Addresses ON Cache.address_id=Addresses.id
+            LEFT JOIN FacilityTypes ON Addresses.facility_type_id=FacilityTypes.id
     ''' )
 
     rows = cur.fetchall()
@@ -56,8 +57,8 @@ def update_cache():
 
         # Calculate time intervals
         now = datetime.datetime.now()
-        stale = now - datetime.datetime.fromtimestamp( row[5] )
-        idle = now - datetime.datetime.fromtimestamp( row[6] )
+        stale = now - datetime.datetime.fromtimestamp( row[7] )
+        idle = now - datetime.datetime.fromtimestamp( row[8] )
 
         if idle > idle_max:
 
@@ -70,7 +71,7 @@ def update_cache():
         elif stale > stale_max:
 
             # Entry is stale; post request to update it
-            post_request( row[1], row[2], row[3], row[4] )
+            post_request( row[1], row[2], row[3], row[4], row[5], row[6] )
 
             n_updated += 1
 
@@ -78,7 +79,7 @@ def update_cache():
         db_util.log( logpath, 'Deleted ' + str( n_deleted ) + ' and updated ' + str( n_updated ) + ' of ' + str( len( rows ) ) + ' entries.  Elapsed time: ' + str( datetime.timedelta( seconds=int( time.time() - start_time ) ) ) )
 
 
-def post_request( address, type, instance, property ):
+def post_request( type, instance, property, facility_type, facility, address ):
 
     # Set up request arguments
     bg_args = {
@@ -88,8 +89,8 @@ def post_request( address, type, instance, property ):
         'live': True
     }
 
-    if address in weather_stations:
-        bg_args['facility'] = address
+    if facility_type == 'weatherStation':
+        bg_args['facility'] = facility
     else:
         bg_args['address'] = address
 
