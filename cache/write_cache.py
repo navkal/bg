@@ -39,7 +39,7 @@ def open_db():
                 type_id INTEGER,
                 instance TEXT,
                 property_id INTEGER,
-                value TEXT,
+                value INTEGER,
                 units_id INTEGER,
                 update_timestamp INTEGER,
                 access_timestamp INTEGER
