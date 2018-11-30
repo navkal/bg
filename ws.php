@@ -143,6 +143,10 @@
 
   function makeUnits( $sPropName )
   {
+    $sDegrees = 'deg F';
+    $sPercent = 'pct';
+    $sInches = 'in';
+
     $tUnitsMap =
     [
       // 'observation'
@@ -154,14 +158,14 @@
       'iconCode' => '',
       'altimeter' => '',
       'altimeterRate' => '',
-      'dewPoint' => 'deg F',
+      'dewPoint' => $sDegrees,
       'dewPointRate' => '',
-      'heatIndex' => '',
-      'humidity' => 'pct',
+      'heatIndex' => $sDegrees,
+      'humidity' => $sPercent,
       'humidityRate' => '',
       'pressureSeaLevel' => '',
       'pressureSeaLevelRate' => '',
-      'rainDaily' => 'in',
+      'rainDaily' => $sInches,
       'rainRate' => '',
       'rainMonthly' => '',
       'rainYearly' => '',
@@ -169,7 +173,7 @@
       'snowRate' => '',
       'snowMonthly' => '',
       'snowYearly' => '',
-      'temperature' => 'deg F',
+      'temperature' => $sDegrees,
       'temperatureRate' => '',
       'visibility' => '',
       'visibilityRate' => '',
@@ -187,7 +191,7 @@
       'windGustTimeUtcDailyStr' => '',
       'windGustDirectionDaily' => '',
       'observationTimeAdjustedLocalStr' => '',
-      'feelsLike' => -5.1,
+      'feelsLike' => '',
       // 'highlow'
       'humidityHigh' => '',
       'humidityHighLocalStr' => '',
@@ -209,7 +213,7 @@
       'temperatureHighUtcStr' => '',
       'temperatureLow' => '',
       'temperatureLowLocalStr' => '',
-      'temperatureLowUtcStr' => '2018-11-22T13 =>01 =>00',
+      'temperatureLowUtcStr' => '',
       // 'station'
       'StationId' => '',
       'ProviderId' => '',
@@ -217,7 +221,7 @@
       'StationName' => '',
       'Latitude' => '',
       'Longitude' => '',
-      'ElevationAboveSeaLevel' => 9.0
+      'ElevationAboveSeaLevel' => ''
     ];
 
     $sUnits = isset( $tUnitsMap[$sPropName] ) ? $tUnitsMap[$sPropName] : '';
