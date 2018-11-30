@@ -145,6 +145,7 @@
   {
     $sDegrees = 'deg F';
     $sPercent = 'pct';
+    $sPerHour = '/hr';
     $sInches = 'in';
 
     $tUnitsMap =
@@ -162,7 +163,7 @@
       'dewPointRate' => '',
       'heatIndex' => $sDegrees,
       'humidity' => $sPercent,
-      'humidityRate' => '',
+      'humidityRate' => $sPercent . $sPerHour,
       'pressureSeaLevel' => '',
       'pressureSeaLevelRate' => '',
       'rainDaily' => $sInches,
