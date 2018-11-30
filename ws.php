@@ -90,13 +90,11 @@
 
     if ( $bLive )
     {
-      error_log( '========> Writing live result to cache' );
       // Save live result in cache
       writeCache( $tInstanceRsp['data'] );
     }
     else
     {
-      error_log( '========> Adding cache timestamp to response' );
       // Add cache timestamp to response
       $tInstanceRsp['data']['timestamp'] = $g_aProperty['timestamp'];
     }
