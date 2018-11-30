@@ -9,17 +9,53 @@
 
   if ( isset( $_REQUEST['instance'] ) )
   {
-
     $sInstance = $_REQUEST['instance'];
 
-    // Issue request to web service
-    $curl = curl_init();
-    curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
-    curl_setopt( $curl, CURLOPT_URL, $g_sWeatherStationUrl );
-    $aRsp = json_decode( json_encode( json_decode( curl_exec( $curl ) ) ), true );
+    $bLive = isset( $_REQUEST['live'] );
 
-    // Traverse response to find requested property
-    extractProperty( $sInstance, $aRsp );
+    if ( ! $bLive)
+    {
+      // Try to retrieve from cache
+
+      // Format command
+      $command = SUDO . quote( getenv( "PYTHON" ) ) . ' cache/read_cache.py'
+        . ' -a ' . $_REQUEST['facility']
+        . ' -t ' . 'weatherData'
+        . ' -i ' . $_REQUEST['instance']
+        . ' -p ' . 'presentValue';
+
+      // Execute command
+      error_log( "==> command=" . $command );
+      exec( $command, $output, $status );
+      error_log( "==> output=" . print_r( $output, true ) );
+
+      // Extract cache response
+      $aCacheRsp = json_decode( json_encode( json_decode( $output[ count( $output ) - 1 ] ) ), true );
+
+      if ( $aCacheRsp['success'] )
+      {
+        // Extract data from cache response
+        $aData = $aCacheRsp['data'];
+        $g_aProperty = [ 'value' => $aData[$aData['property']], 'units' => $aData['units'], 'timestamp' => $aData['timestamp'] ];
+      }
+      else
+      {
+        // Set flag to retry as a live request
+        $bLive = true;
+      }
+    }
+
+    if ( $bLive )
+    {
+      // Issue request to web service
+      $curl = curl_init();
+      curl_setopt( $curl, CURLOPT_RETURNTRANSFER, true );
+      curl_setopt( $curl, CURLOPT_URL, $g_sWeatherStationUrl );
+      $aRsp = json_decode( json_encode( json_decode( curl_exec( $curl ) ) ), true );
+
+      // Traverse response to find requested property
+      extractProperty( $sInstance, $aRsp );
+    }
 
     if ( empty( $g_aProperty ) )
     {
@@ -52,8 +88,18 @@
       'units' => $g_aProperty['units']
     ];
 
-    // Save result in cache
-    writeCache( $tInstanceRsp['data'] );
+    if ( $bLive )
+    {
+      error_log( '========> Writing live result to cache' );
+      // Save live result in cache
+      writeCache( $tInstanceRsp['data'] );
+    }
+    else
+    {
+      error_log( '========> Adding cache timestamp to response' );
+      // Add cache timestamp to response
+      $tInstanceRsp['data']['timestamp'] = $g_aProperty['timestamp'];
+    }
   }
 
   $tGatewayRsp =
