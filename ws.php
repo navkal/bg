@@ -130,7 +130,7 @@
       {
         if ( $sPropName == $sKey )
         {
-          $g_aProperty = [ 'value' => $val, 'units' => makeUnits( $sPropName ) ];
+          $g_aProperty = [ 'value' => $val, 'units' => ( $val === null ) ? '' : makeUnits( $sPropName ) ];
         }
       }
 
