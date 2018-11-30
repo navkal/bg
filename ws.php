@@ -30,13 +30,13 @@
       error_log( "==> output=" . print_r( $output, true ) );
 
       // Extract cache response
-      $aCacheRsp = json_decode( json_encode( json_decode( $output[ count( $output ) - 1 ] ) ), true );
+      $tCacheRsp = json_decode( $output[ count( $output ) - 1 ] );
 
-      if ( $aCacheRsp['success'] )
+      if ( $tCacheRsp->success )
       {
         // Extract data from cache response
-        $aData = $aCacheRsp['data'];
-        $g_aProperty = [ 'value' => $aData[$aData['property']], 'units' => $aData['units'], 'timestamp' => $aData['timestamp'] ];
+        $tData = $tCacheRsp->data;
+        $g_aProperty = [ 'value' => $tData->presentValue, 'units' => $tData->units, 'timestamp' => $tData->timestamp ];
       }
       else
       {
