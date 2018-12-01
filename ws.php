@@ -191,7 +191,7 @@
       'windGustTimeLocalHourlyStr' => $sNoUnits,
       'windGustTimeUtcHourlyStr' => $sNoUnits,
       'windGustDirectionHourly' => $sDegrees,
-      'windGustDaily' => $sDegrees,
+      'windGustDaily' => $sMph,
       'windGustTimeLocalDailyStr' => $sNoUnits,
       'windGustTimeUtcDailyStr' => $sNoUnits,
       'windGustDirectionDaily' => $sDegrees,
