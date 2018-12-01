@@ -150,6 +150,7 @@
     $sInches = 'in';
     $sMph = 'mph';
     $sNoUnits = '';
+    $sMiles = 'mi';
 
     $tUnitsMap =
     [
@@ -179,22 +180,22 @@
       'snowYearly' => $sInches,
       'temperature' => $sDegreesF,
       'temperatureRate' => $sDegreesF . $sPerHour,
-      'visibility' => '',
-      'visibilityRate' => '',
+      'visibility' => $sMiles,
+      'visibilityRate' => $sMiles . $sPerHour,
       'windChill' => $sDegreesF,
       'windSpeed' => $sMph,
       'windDirection' => $sDegrees,
       'windSpeedAvg' => $sMph,
       'windDirectionAvg' => $sDegrees,
       'windGustHourly' => $sMph,
-      'windGustTimeLocalHourlyStr' => '',
-      'windGustTimeUtcHourlyStr' => '',
-      'windGustDirectionHourly' => '',
-      'windGustDaily' => '',
-      'windGustTimeLocalDailyStr' => '',
-      'windGustTimeUtcDailyStr' => '',
-      'windGustDirectionDaily' => '',
-      'observationTimeAdjustedLocalStr' => '',
+      'windGustTimeLocalHourlyStr' => $sNoUnits,
+      'windGustTimeUtcHourlyStr' => $sNoUnits,
+      'windGustDirectionHourly' => $sDegrees,
+      'windGustDaily' => $sDegrees,
+      'windGustTimeLocalDailyStr' => $sNoUnits,
+      'windGustTimeUtcDailyStr' => $sNoUnits,
+      'windGustDirectionDaily' => $sDegrees,
+      'observationTimeAdjustedLocalStr' => $sNoUnits,
       'feelsLike' => $sDegreesF,
       // 'highlow'
       'humidityHigh' => '',
