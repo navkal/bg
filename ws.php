@@ -149,20 +149,21 @@
     $sPerHour = '/hr';
     $sInches = 'in';
     $sMph = 'mph';
+    $sNoUnits = '';
 
     $tUnitsMap =
     [
       // 'observation'
-      'key' => '',
-      'stationId' => '',
-      'providerId' => '',
-      'observationTimeLocalStr' => '',
-      'observationTimeUtcStr' => '',
-      'iconCode' => '',
+      'key' => $sNoUnits,
+      'stationId' => $sNoUnits,
+      'providerId' => $sNoUnits,
+      'observationTimeLocalStr' => $sNoUnits,
+      'observationTimeUtcStr' => $sNoUnits,
+      'iconCode' => $sNoUnits,
       'altimeter' => '',
       'altimeterRate' => '',
       'dewPoint' => $sDegreesF,
-      'dewPointRate' => '',
+      'dewPointRate' => $sDegreesF . $sPerHour,
       'heatIndex' => $sDegreesF,
       'humidity' => $sPercent,
       'humidityRate' => $sPercent . $sPerHour,
