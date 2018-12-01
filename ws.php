@@ -143,10 +143,12 @@
 
   function makeUnits( $sPropName )
   {
-    $sDegrees = 'deg F';
+    $sDegrees = 'deg';
+    $sDegreesF = 'deg F';
     $sPercent = 'pct';
     $sPerHour = '/hr';
     $sInches = 'in';
+    $sMph = 'mph';
 
     $tUnitsMap =
     [
@@ -159,9 +161,9 @@
       'iconCode' => '',
       'altimeter' => '',
       'altimeterRate' => '',
-      'dewPoint' => $sDegrees,
+      'dewPoint' => $sDegreesF,
       'dewPointRate' => '',
-      'heatIndex' => $sDegrees,
+      'heatIndex' => $sDegreesF,
       'humidity' => $sPercent,
       'humidityRate' => $sPercent . $sPerHour,
       'pressureSeaLevel' => $sInches,
@@ -174,15 +176,15 @@
       'snowRate' => $sInches . $sPerHour,
       'snowMonthly' => $sInches,
       'snowYearly' => $sInches,
-      'temperature' => $sDegrees,
-      'temperatureRate' => $sDegrees . $sPerHour,
+      'temperature' => $sDegreesF,
+      'temperatureRate' => $sDegreesF . $sPerHour,
       'visibility' => '',
       'visibilityRate' => '',
-      'windChill' => '',
-      'windSpeed' => '',
-      'windDirection' => '',
-      'windSpeedAvg' => '',
-      'windDirectionAvg' => '',
+      'windChill' => $sDegreesF,
+      'windSpeed' => $sMph,
+      'windDirection' => $sDegrees,
+      'windSpeedAvg' => $sMph,
+      'windDirectionAvg' => $sDegrees,
       'windGustHourly' => '',
       'windGustTimeLocalHourlyStr' => '',
       'windGustTimeUtcHourlyStr' => '',
@@ -192,7 +194,7 @@
       'windGustTimeUtcDailyStr' => '',
       'windGustDirectionDaily' => '',
       'observationTimeAdjustedLocalStr' => '',
-      'feelsLike' => '',
+      'feelsLike' => $sDegreesF,
       // 'highlow'
       'humidityHigh' => '',
       'humidityHighLocalStr' => '',
