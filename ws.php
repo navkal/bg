@@ -145,12 +145,15 @@
   {
     $sDegrees = 'deg';
     $sDegreesF = 'deg F';
+    $sDegreesN = 'deg N';
+    $sDegreesW = 'deg W';
     $sPercent = 'pct';
     $sPerHour = '/hr';
     $sInches = 'in';
     $sMph = 'mph';
     $sNoUnits = '';
     $sMiles = 'mi';
+    $sFeet = 'ft';
 
     $tUnitsMap =
     [
@@ -220,13 +223,13 @@
       'temperatureLowLocalStr' => $sNoUnits,
       'temperatureLowUtcStr' => $sNoUnits,
       // 'station'
-      'StationId' => '',
-      'ProviderId' => '',
-      'ProviderName' => '',
-      'StationName' => '',
-      'Latitude' => '',
-      'Longitude' => '',
-      'ElevationAboveSeaLevel' => ''
+      'StationId' => $sNoUnits,
+      'ProviderId' => $sNoUnits,
+      'ProviderName' => $sNoUnits,
+      'StationName' => $sNoUnits,
+      'Latitude' => $sDegreesN,
+      'Longitude' => $sDegreesW,
+      'ElevationAboveSeaLevel' => $sFeet
     ];
 
     $sUnits = isset( $tUnitsMap[$sPropName] ) ? $tUnitsMap[$sPropName] : '';
