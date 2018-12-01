@@ -185,7 +185,7 @@
       'windDirection' => $sDegrees,
       'windSpeedAvg' => $sMph,
       'windDirectionAvg' => $sDegrees,
-      'windGustHourly' => '',
+      'windGustHourly' => $sMph,
       'windGustTimeLocalHourlyStr' => '',
       'windGustTimeUtcHourlyStr' => '',
       'windGustDirectionHourly' => '',
