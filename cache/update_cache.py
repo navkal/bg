@@ -50,8 +50,7 @@ def update_cache():
         if idle > idle_max:
 
             # Entry has not been used; delete it
-            cur.execute( 'DELETE FROM Cache WHERE id=?', ( row[0], ) )
-            conn.commit()
+            delete_entry( row[0] )
 
             n_deleted += 1
 
@@ -64,6 +63,40 @@ def update_cache():
 
     if n_deleted or n_updated:
         db_util.log( logpath, 'Deleted ' + str( n_deleted ) + ' and updated ' + str( n_updated ) + ' of ' + str( len( rows ) ) + ' entries.  Elapsed time: ' + str( datetime.timedelta( seconds=int( time.time() - start_time ) ) ) )
+
+
+def delete_entry( cache_id ):
+
+    # Get direct references to rows in other tables
+    cur.execute( 'SELECT address_id, type_id, property_id, units_id FROM Cache WHERE id=?', ( cache_id, ) )
+    cache_row = cur.fetchone()
+    address_id = cache_row[0]
+    type_id = cache_row[1]
+    property_id = cache_row[2]
+    units_id = cache_row[3]
+
+    # Get indirect references to rows in other tables
+    cur.execute( 'SELECT facility_type_id FROM Addresses WHERE id=?', ( address_id, ) )
+    addresses_row = cur.fetchone()
+    facility_type_id = addresses_row[0]
+
+    # Delete the row
+    cur.execute( 'DELETE FROM Cache WHERE id=?', ( cache_id, ) )
+
+    # Clear obsolete references
+    clear_reference( 'Cache', 'units_id', units_id, 'Units' )
+    clear_reference( 'Cache', 'property_id', property_id, 'Properties' )
+    clear_reference( 'Cache', 'type_id', type_id, 'Types' )
+    clear_reference( 'Cache', 'address_id', address_id, 'Addresses' )
+    clear_reference( 'Addresses', 'facility_type_id', facility_type_id, 'FacilityTypes' )
+
+    conn.commit()
+
+
+def clear_reference( ref_source, id_name, id_value, ref_target ):
+    cur.execute( 'SELECT COUNT(id) FROM ' + ref_source + ' WHERE ' + id_name + '=?', ( id_value, ) )
+    if cur.fetchone()[0] == 0:
+        cur.execute( 'DELETE FROM ' + ref_target + ' WHERE id=?', ( id_value, ) )
 
 
 def post_request( type, instance, property, facility_type, facility, address ):
