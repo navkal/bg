@@ -18,6 +18,14 @@ def make_rsp( rq ):
 
     msg = ''
 
+    # Translate abbreviated property names
+    if 'f' in rq:
+        rq['facility'] = rq['f']
+        del rq['f']
+    if 'i' in rq:
+        rq['instance'] = rq['i']
+        del rq['i']
+
     if 'facility' in rq and rq['facility'] in facility_map:
         map_entry = facility_map[rq['facility']]
 
