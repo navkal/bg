@@ -28,6 +28,9 @@ def make_facility_map( path='' ):
                 if facility_type == 'bacnetAgent':
                     address = socket.inet_ntoa( struct.pack( '>L', int( facility_row[2].strip(), 16 ) ) )
                     facility_map[facility]['address'] = address
+                    ########### DEBUG - get IP addresses of facilities ###########
+                    # print( '{0:18} {1}'.format( facility, address ) )
+                    ########### DEBUG - get IP addresses of facilities ###########
                     facility_map[facility]['default_type'] = 'analogInput'
 
                 elif facility_type == 'weatherStation':
